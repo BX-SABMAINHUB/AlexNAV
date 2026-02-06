@@ -2,36 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Mi Navegador Privado</title>
+    <title>Mi Navegador Privado | Pro</title>
+    <style>
+        :root { --accent: #00d4ff; --bg: #121212; --card: #1e1e1e; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        
+        /* Barra de búsqueda estilo Startpage */
+        .header { padding: 40px 20px; text-align: center; background: #1a1a1a; border-bottom: 1px solid #333; }
+        .search-container { max-width: 600px; margin: 0 auto; display: flex; }
+        input { 
+            flex: 1; padding: 15px; border-radius: 25px 0 0 25px; border: 1px solid #444; 
+            background: var(--card); color: white; outline: none; 
+        }
+        button { 
+            padding: 15px 25px; border-radius: 0 25px 25px 0; border: none; 
+            background: var(--accent); font-weight: bold; cursor: pointer; 
+        }
+
+        /* Área de Resultados */
+        #results-area { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .result-item { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--accent); }
+        .result-item a { color: var(--accent); font-size: 1.2rem; text-decoration: none; }
+        .result-item p { color: #aaa; font-size: 0.9rem; }
+    </style>
 </head>
 <body>
 
-    <div id="nav-bar">
-        <button onclick="home()">🏠</button>
-        <input type="text" id="url-input" placeholder="Escribe una web (ej: wikipedia.org) o busca algo...">
-        <button onclick="navegar()">Ir</button>
+    <div class="header">
+        <h1>MI BUSCADOR</h1>
+        <div class="search-container">
+            <input type="text" id="query" placeholder="Busca de forma privada...">
+            <button onclick="buscar()">BUSCAR</button>
+        </div>
     </div>
 
-    <iframe id="visor" class="web-container" src="https://www.bing.com"></iframe>
+    <div id="results-area">
+        <p style="text-align:center; color:#666;">Escribe algo arriba para buscar en la red.</p>
+    </div>
 
     <script>
-        function navegar() {
-            let valor = document.getElementById('url-input').value;
-            let visor = document.getElementById('visor');
+        function buscar() {
+            const q = document.getElementById('query').value;
+            const area = document.getElementById('results-area');
+            
+            area.innerHTML = "🔍 Buscando resultados para: " + q + "...";
 
-            if (!valor.includes('.')) {
-                // Si es una palabra, busca en DuckDuckGo (que permite mostrarse en cuadros mejor que Google)
-                visor.src = "https://duckduckgo.com/?q=" + encodeURIComponent(valor) + "&ko=-1&k1=-1";
-            } else {
-                // Si es una URL, intenta cargarla
-                let url = valor.startsWith('http') ? valor : 'https://' + valor;
-                visor.src = url;
-            }
-        }
+            // Truco: Usamos la API de búsqueda libre de DuckDuckGo
+            // Esto devuelve datos, no una página web completa
+            fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&pretty=1`)
+            .then(response => response.json())
+            .then(data => {
+                area.innerHTML = ""; // Limpiar
+                
+                // 1. Mostrar el resultado principal (Abstract)
+                if(data.AbstractText) {
+                    area.innerHTML += `
+                        <div class="result-item">
+                            <a href="${data.AbstractURL}" target="_blank">${data.Heading}</a>
+                            <p>${data.AbstractText}</p>
+                        </div>
+                    `;
+                }
 
-        function home() {
-            document.getElementById('visor').src = "https://www.bing.com";
+                // 2. Mostrar temas relacionados
+                data.RelatedTopics.slice(0, 5).forEach(topic => {
+                    if(topic.Text) {
+                        area.innerHTML += `
+                            <div class="result-item">
+                                <a href="${topic.FirstURL}" target="_blank">${topic.Text.substring(0, 50)}...</a>
+                                <p>${topic.Text}</p>
+                            </div>
+                        `;
+                    }
+                });
+
+                if(area.innerHTML === "") {
+                    area.innerHTML = "No encontré resultados directos. Intenta con otra palabra.";
+                }
+            });
         }
     </script>
 </body>
