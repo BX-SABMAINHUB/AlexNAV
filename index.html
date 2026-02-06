@@ -2,72 +2,44 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexNAV | Ultimate Edition</title>
+    <title>AlexNAV | Ultimate Search</title>
     <style>
-        :root { 
-            --main: #00d4ff; 
-            --bg: #0a0a0c; 
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-        
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            background: radial-gradient(circle at top right, #121217, #050505);
-            color: white; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden;
-        }
+        :root { --main: #00d4ff; --bg: #050507; --glass: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.1); }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* HEADER PREMIUM */
+        /* HEADER ESTILO STARTPAGE */
         header { 
-            height: 70px; background: rgba(10, 10, 12, 0.8);
-            backdrop-filter: blur(15px); display: flex; align-items: center; 
-            padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 1000;
+            height: 70px; background: rgba(5,5,7,0.9); backdrop-filter: blur(20px);
+            display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 1000;
         }
+        #logo { font-size: 1.5rem; font-weight: 800; color: var(--main); cursor: pointer; letter-spacing: -1px; margin-right: 40px; }
+        
+        .search-wrap { flex: 1; max-width: 700px; display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 8px 15px; }
+        .search-wrap input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 1rem; }
+        
+        .nav-tools { display: flex; gap: 15px; margin-left: 25px; }
+        .t-btn { background: transparent; border: none; color: #888; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+        .t-btn:hover { color: var(--main); transform: translateY(-2px); }
 
-        #logo { 
-            font-size: 1.6rem; font-weight: 800; color: var(--main);
-            text-shadow: 0 0 15px rgba(0, 212, 255, 0.5); cursor: pointer;
-            letter-spacing: -1px; margin-right: 30px;
-        }
+        /* CUERPO PRINCIPAL */
+        #viewport { height: calc(100vh - 71px); width: 100%; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; background: white; display: none; }
+        
+        #start-page { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #101015 0%, #050507 100%); }
+        .hero-title { font-size: 4.5rem; font-weight: 900; margin-bottom: 30px; letter-spacing: -3px; }
 
-        .search-container { 
-            flex: 1; max-width: 800px; position: relative;
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 15px; padding: 10px 20px; transition: 0.3s;
-        }
-        .search-container:focus-within { border-color: var(--main); box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
-        .search-container input { width: 100%; background: transparent; border: none; color: white; outline: none; font-size: 1rem; }
-
-        .nav-actions { display: flex; gap: 15px; margin-left: 20px; }
-        .action-btn { background: var(--glass); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
-        .action-btn:hover { background: var(--main); color: black; }
-
-        /* PANTALLA DE INICIO (ESTILO STARTPAGE) */
-        #home { 
-            height: calc(100vh - 70px); display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; transition: 0.5s;
-        }
-        .welcome-text { font-size: 4rem; font-weight: 900; margin-bottom: 10px; background: linear-gradient(to right, #fff, var(--main)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* BUSCADOR GOOGLE INTEGRADO */
-        .search-engine-box { width: 100%; max-width: 700px; min-height: 200px; }
-
-        /* VISOR WEB */
-        #web-view { width: 100%; height: calc(100vh - 70px); border: none; display: none; background: white; }
-
-        /* IA PANEL FLOTANTE */
-        #ai-toggle { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: var(--main); border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,212,255,0.4); z-index: 2000; font-size: 1.8rem; transition: 0.3s; }
-        #ai-window { position: fixed; bottom: 110px; right: 30px; width: 400px; height: 600px; background: #121217; border: 1px solid var(--border); border-radius: 25px; display: none; flex-direction: column; z-index: 2000; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; }
-        .ai-head { background: var(--main); color: black; padding: 20px; font-weight: bold; display: flex; justify-content: space-between; }
-        #ai-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .bubble { padding: 12px 18px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.5; }
-        .bot { background: var(--glass); border: 1px solid var(--border); align-self: flex-start; }
-        .user { background: var(--main); color: black; align-self: flex-end; font-weight: 500; }
-        .ai-input { padding: 20px; background: rgba(0,0,0,0.2); display: flex; gap: 10px; }
-        .ai-input input { flex: 1; background: #1e1e24; border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: white; outline: none; }
-
-        /* OCULTAR MARCAS */
+        /* PANEL IA MEJORADO */
+        #ai-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--main); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 25px rgba(0,212,255,0.4); z-index: 2001; font-size: 1.8rem; }
+        #ai-window { position: fixed; bottom: 105px; right: 30px; width: 380px; height: 550px; background: #0f0f13; border: 1px solid var(--border); border-radius: 20px; display: none; flex-direction: column; z-index: 2000; box-shadow: 0 15px 40px rgba(0,0,0,0.6); overflow: hidden; }
+        .ai-header { background: var(--main); color: black; padding: 15px 20px; font-weight: bold; display: flex; justify-content: space-between; }
+        #ai-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #0a0a0c; }
+        .msg { padding: 12px 16px; border-radius: 15px; font-size: 0.95rem; line-height: 1.5; max-width: 85%; }
+        .msg-ia { background: var(--glass); border: 1px solid var(--border); align-self: flex-start; }
+        .msg-user { background: var(--main); color: black; align-self: flex-end; font-weight: 600; }
+        .ai-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        .ai-footer input { flex: 1; background: #1a1a20; border: 1px solid var(--border); padding: 10px; border-radius: 10px; color: white; outline: none; }
+        
+        /* OCULTAR PUBLICIDAD */
         .gcsc-branding, .gsc-adBlock { display: none !important; }
     </style>
 </head>
@@ -75,67 +47,64 @@
 
 <header>
     <div id="logo" onclick="location.reload()">ALEXNAV</div>
-    <div class="search-container">
-        <input type="text" id="main-search" placeholder="Escribe algo para buscar o una URL .com" onkeypress="if(event.key==='Enter') navegar()">
+    <div class="search-wrap">
+        <input type="text" id="main-in" placeholder="Busca en la web o pega una URL..." onkeypress="if(event.key==='Enter') ejecutarNavegacion()">
     </div>
-    <div class="nav-actions">
-        <button class="action-btn" onclick="refrescar()" title="Recargar">🔄</button>
-        <button class="action-btn" onclick="abrirNueva()" title="Pestaña Nueva">⧉</button>
-        <button class="action-btn" onclick="toggleSettings()" title="Ajustes">⚙️</button>
+    <div class="nav-tools">
+        <button class="t-btn" onclick="location.reload()">⟳</button>
+        <button class="t-btn" onclick="window.open(document.getElementById('viewer').src || location.href)">⧉</button>
+        <button class="t-btn" onclick="alert('Ajustes AlexNAV: Próximamente')">⚙</button>
     </div>
 </header>
 
-<div id="home">
-    <div class="welcome-text">AlexNAV</div>
-    <p style="color: #888; margin-top: -10px; margin-bottom: 30px;">Privacidad absoluta. Inteligencia sin límites.</p>
-    <div class="search-engine-box">
-        <script async src="https://cse.google.com/cse.js?cx=b3588f8452e4c4301"></script>
-        <div class="gcse-search"></div>
+<div id="viewport">
+    <div id="start-page">
+        <div class="hero-title">AlexNAV</div>
+        <div style="width:100%; max-width:650px;">
+            <script async src="https://cse.google.com/cse.js?cx=b3588f8452e4c4301"></script>
+            <div class="gcse-search"></div>
+        </div>
     </div>
+    <iframe id="viewer"></iframe>
 </div>
 
-<iframe id="web-view"></iframe>
-
-<div id="ai-toggle" onclick="toggleAI()">⚡</div>
+<div id="ai-btn" onclick="abrirIA()">🤖</div>
 <div id="ai-window">
-    <div class="ai-head">ALEXNAV IA GENERATIVA <span onclick="toggleAI()" style="cursor:pointer">✕</span></div>
-    <div id="ai-messages">
-        <div class="bubble bot">Hola, Alex. Mi procesador está al 100%. Pregúntame lo que quieras, no tengo restricciones.</div>
+    <div class="ai-header">AlexNAV Inteligencia <span onclick="abrirIA()" style="cursor:pointer">✕</span></div>
+    <div id="ai-content">
+        <div class="msg msg-ia">Hola Alex. Soy tu IA sin restricciones. ¿Qué quieres saber hoy?</div>
     </div>
-    <div class="ai-input">
-        <input type="text" id="ai-text" placeholder="Escribe aquí..." onkeypress="if(event.key==='Enter') hablarIA()">
-        <button onclick="hablarIA()" style="background:var(--main); border:none; border-radius:10px; padding:10px; cursor:pointer;">▶</button>
+    <div class="ai-footer">
+        <input type="text" id="ai-input" placeholder="Pregúntame cualquier cosa..." onkeypress="if(event.key==='Enter') enviarConsultaIA()">
+        <button onclick="enviarConsultaIA()" style="background:var(--main); border:none; border-radius:8px; padding:0 15px; cursor:pointer; font-weight:bold;">ENVIAR</button>
     </div>
 </div>
 
 <script src="ia.js"></script>
 <script>
-    function navegar() {
-        const val = document.getElementById('main-search').value.trim();
-        if(!val) return;
-        if(val.includes('.') && !val.includes(' ')) {
-            const url = val.startsWith('http') ? val : 'https://' + val;
-            document.getElementById('home').style.display = 'none';
-            const f = document.getElementById('web-view');
-            f.style.display = 'block';
+    function ejecutarNavegacion() {
+        const q = document.getElementById('main-in').value.trim();
+        if(!q) return;
+        if(q.includes('.') && !q.includes(' ')) {
+            const url = q.startsWith('http') ? q : 'https://' + q;
+            document.getElementById('start-page').style.display = 'none';
+            const f = document.getElementById('viewer');
             f.src = url;
+            f.style.display = 'block';
         } else {
-            const gInput = document.querySelector('input.gsc-input');
-            if(gInput) {
-                gInput.value = val;
+            const gIn = document.querySelector('input.gsc-input');
+            if(gIn) {
+                gIn.value = q;
                 document.querySelector('button.gsc-search-button').click();
-                document.getElementById('home').style.display = 'flex';
+                document.getElementById('start-page').style.display = 'flex';
             }
         }
     }
 
-    function toggleAI() {
-        const win = document.getElementById('ai-window');
-        win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+    function abrirIA() {
+        const w = document.getElementById('ai-window');
+        w.style.display = (w.style.display === 'flex') ? 'none' : 'flex';
     }
-
-    function refrescar() { location.reload(); }
-    function abrirNueva() { window.open(document.getElementById('web-view').src || window.location.href, '_blank'); }
 </script>
 </body>
 </html>
