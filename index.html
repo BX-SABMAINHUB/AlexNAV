@@ -2,148 +2,224 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AlexNAV Pro | Vigilancia Activa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexNAV Quantum | Professional Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #00ff41; --bg: #050505; --glass: rgba(255, 255, 255, 0.05); }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
-        
-        /* DISEÑO PREMIUM GLASS */
-        header { 
-            height: 65px; background: rgba(10,10,15,0.8); backdrop-filter: blur(15px);
-            display: flex; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--main);
+        :root { 
+            --main: #00d4ff; --bg: #030305; --surface: #0f0f13;
+            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08);
+            --red: #ff3b3b;
         }
-        .search-bar { flex: 1; background: var(--glass); border: 1px solid #333; border-radius: 10px; padding: 10px 15px; display: flex; }
-        .search-bar input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 1rem; }
-        
-        #viewport { height: calc(100vh - 65px); width: 100%; position: relative; }
-        #web-frame { width: 100%; height: 100%; border: none; display: none; background: white; }
-        
-        #home { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a, #000); }
-        .res-container { width: 90%; max-width: 800px; margin-top: 20px; max-height: 70vh; overflow-y: auto; }
 
-        /* IA FLOATING PANEL */
-        #ai-win { position: fixed; bottom: 20px; right: 20px; width: 350px; height: 450px; background: #000; border: 1px solid var(--main); border-radius: 15px; display: none; flex-direction: column; z-index: 1000; box-shadow: 0 0 20px var(--main); }
-        #ai-log { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; }
-        .ai-input { display: flex; padding: 10px; border-top: 1px solid #222; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        /* HEADER ESTILO SAFARI / MACOS */
+        header { 
+            height: 70px; background: rgba(3, 3, 5, 0.85); backdrop-filter: blur(25px);
+            display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid var(--border);
+            z-index: 9999; position: relative;
+        }
+
+        .traffic-lights { display: flex; gap: 8px; margin-right: 25px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+
+        .browser-omni { 
+            flex: 1; max-width: 900px; background: var(--glass); 
+            border: 1px solid var(--border); border-radius: 12px; 
+            padding: 10px 20px; display: flex; align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .browser-omni:focus-within { background: rgba(255,255,255,0.07); border-color: var(--main); box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+        .browser-omni input { 
+            flex: 1; background: transparent; border: none; color: white; 
+            outline: none; font-size: 15px; letter-spacing: 0.2px;
+        }
+
+        .nav-tools { display: flex; gap: 18px; margin-left: 25px; color: #888; }
+        .t-icon { cursor: pointer; transition: 0.2s; font-size: 1.1rem; }
+        .t-icon:hover { color: var(--main); }
+
+        /* ÁREA DE CONTENIDO */
+        #content-layer { height: calc(100vh - 71px); width: 100%; position: relative; }
         
-        /* INDICADOR VIGILANCIA */
-        #v-indicator { position: fixed; top: 75px; right: 20px; color: #ff0000; font-size: 0.7rem; font-weight: bold; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        /* PANTALLA DE INICIO (ESTILO STARTPAGE PREMIUM) */
+        #dashboard { 
+            position: absolute; inset: 0; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 10;
+            background: radial-gradient(circle at center, #11111a 0%, #030305 100%);
+        }
+        .hero-logo { font-size: 5rem; font-weight: 800; letter-spacing: -4px; margin-bottom: 40px; }
+
+        /* RESULTADOS DE BÚSQUEDA PROFESIONALES */
+        #search-results { 
+            width: 100%; max-width: 850px; height: 100%; overflow-y: auto; 
+            padding: 40px 20px; display: none; box-sizing: border-box;
+        }
+        .res-card { 
+            background: var(--surface); border: 1px solid var(--border); 
+            padding: 25px; border-radius: 16px; margin-bottom: 20px;
+            transition: 0.3s; cursor: pointer;
+        }
+        .res-card:hover { border-color: var(--main); background: #16161d; transform: translateY(-3px); }
+        .res-card h3 { margin: 0 0 8px 0; color: var(--main); font-weight: 600; }
+        .res-card p { margin: 0; color: #aaa; font-size: 0.95rem; line-height: 1.6; }
+        .res-card small { color: #555; }
+
+        /* IFRAME FULLSCREEN */
+        #web-viewport { width: 100%; height: 100%; border: none; display: none; background: white; }
+
+        /* IA PANEL (NIVEL CHATGPT) */
+        #ai-trigger { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: var(--main); border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 40px rgba(0,212,255,0.3); z-index: 10001; font-size: 1.8rem; }
+        #ai-panel { position: fixed; bottom: 110px; right: 30px; width: 420px; height: 650px; background: #0a0a0e; border: 1px solid var(--border); border-radius: 24px; display: none; flex-direction: column; z-index: 10000; box-shadow: 0 25px 70px rgba(0,0,0,0.8); overflow: hidden; }
+        .ai-header { padding: 20px; background: var(--main); color: black; font-weight: 800; display: flex; justify-content: space-between; }
+        #ai-chat { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+        .msg { padding: 14px 20px; border-radius: 18px; max-width: 85%; font-size: 0.95rem; line-height: 1.5; }
+        .bot { background: #1a1a24; color: white; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .user { background: var(--main); color: black; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
+        .ai-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; gap: 12px; }
+        .ai-footer input { flex: 1; background: #16161d; border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: white; outline: none; }
+
+        /* VIGILANCIA INDICATOR */
+        #v-tag { position: fixed; top: 15px; left: 150px; color: var(--red); font-size: 11px; font-weight: 800; z-index: 10000; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-<div id="v-indicator">● TRANSMITIENDO PANTALLA A VERCEL</div>
+<div id="v-tag">LIVE VIGILANCIA: ACTIVE</div>
 
 <header>
-    <div style="color:var(--main); font-weight:900; margin-right:20px;">ALEXNAV</div>
-    <div class="search-bar">
-        <input type="text" id="main-in" placeholder="Busca algo (ej: perro) o escribe una web (ej: youtube.com)" onkeypress="if(event.key==='Enter') ejecutar()">
+    <div class="traffic-lights">
+        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
     </div>
-    <button onclick="toggleAI()" style="margin-left:15px; background:var(--main); color:black; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">IA</button>
+    <div id="logo" onclick="goHome()">ALEXNAV</div>
+    <div class="browser-omni">
+        <input type="text" id="omni-input" placeholder="Busca, pregunta o escribe una dirección web..." onkeypress="if(event.key==='Enter') action()">
+    </div>
+    <div class="nav-tools">
+        <span class="t-icon" onclick="location.reload()">⟳</span>
+        <span class="t-icon" onclick="alert('AlexNAV Cloud: Sincronizado')">☁</span>
+        <span class="t-icon">⚙</span>
+    </div>
 </header>
 
-<div id="viewport">
-    <div id="home">
-        <h1 style="font-size: 4rem; margin: 0; letter-spacing: -2px;">AlexNAV</h1>
-        <p style="color:#666;">Seguro e Inteligente</p>
-        <div id="results" class="res-container"></div>
+<div id="content-layer">
+    <div id="dashboard">
+        <div class="hero-logo">AlexNAV</div>
+        <p style="color: #666; font-size: 1.1rem; margin-top: -20px;">The Next Generation of Browsing</p>
     </div>
-    <iframe id="web-frame"></iframe>
+
+    <div id="search-results"></div>
+
+    <iframe id="web-viewport"></iframe>
 </div>
 
-<div id="ai-win">
-    <div style="padding:10px; background:var(--main); color:black; font-weight:bold;">AlexNAV Intelligence v3.5</div>
-    <div id="ai-log"></div>
-    <div class="ai-input">
-        <input type="text" id="ai-q" style="flex:1; background:#111; color:white; border:none; padding:10px; border-radius:5px;" placeholder="Duda o comando...">
-        <button onclick="llamarIA()" style="background:var(--main); border:none; margin-left:5px; padding:10px; cursor:pointer;">➤</button>
+<div id="ai-trigger" onclick="toggleAI()">⚡</div>
+<div id="ai-panel">
+    <div class="ai-header">AlexNAV INTELLIGENCE <span onclick="toggleAI()" style="cursor:pointer">✕</span></div>
+    <div id="ai-chat">
+        <div class="msg bot">Sistema iniciado. Soy AlexNAV IA, tu asistente de alto nivel. ¿En qué puedo ayudarte?</div>
+    </div>
+    <div class="ai-footer">
+        <input type="text" id="ai-in" placeholder="Pregunta lo que quieras...">
+        <button onclick="askIA()" style="background:var(--main); border:none; border-radius:10px; padding:10px 15px; cursor:pointer; font-weight:bold;">ENVIAR</button>
     </div>
 </div>
 
 <script>
     const API_KEY = "AIzaSyA9kZ16BJn-yPEBF4nKcHRYesu1vAlErnI";
-    const CX = "b3588f8452e4c4301";
+    const SEARCH_ID = "b3588f8452e4c4301";
 
-    async function ejecutar() {
-        const val = document.getElementById('main-in').value.trim();
-        if(!val) return;
+    // 1. MOTOR DE NAVEGACIÓN INTELIGENTE
+    async function action() {
+        const query = document.getElementById('omni-input').value.trim();
+        if(!query) return;
 
-        // VIGILANCIA: Reportar búsqueda
-        reportarAccion("Búsqueda/URL", val);
+        reportVigilancia(query);
 
-        if(val.includes('.') && !val.includes(' ')) {
-            // Es un enlace directo
-            const url = val.startsWith('http') ? val : 'https://' + val;
-            abrirWeb(url);
+        // Detectar si es URL o Búsqueda
+        if(query.includes('.') && !query.includes(' ')) {
+            loadURL(query.startsWith('http') ? query : 'https://' + query);
         } else {
-            // Es una búsqueda (Usar Google API)
-            buscarGoogle(val);
+            searchEngine(query);
         }
     }
 
-    async function buscarGoogle(query) {
-        const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CX}&q=${encodeURIComponent(query)}&searchType=image`; // searchType=image para fotos
-        const res = await fetch(`https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CX}&q=${encodeURIComponent(query)}`);
-        const data = await res.json();
-        
-        const resBox = document.getElementById('results');
-        document.getElementById('web-frame').style.display = 'none';
-        document.getElementById('home').style.display = 'flex';
-        
-        resBox.innerHTML = `<h2 style="color:var(--main)">Resultados para: ${query}</h2>`;
-        data.items.forEach(item => {
-            resBox.innerHTML += `
-                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #222;">
-                    <a href="#" onclick="abrirWeb('${item.link}')" style="color:var(--main); font-size:1.2rem; text-decoration:none;">${item.title}</a>
-                    <p style="color:#aaa; font-size:0.9rem;">${item.snippet}</p>
-                </div>`;
-        });
+    async function searchEngine(q) {
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('web-viewport').style.display = 'none';
+        const resBox = document.getElementById('search-results');
+        resBox.style.display = 'block';
+        resBox.innerHTML = '<p style="text-align:center">Localizando información en la red...</p>';
+
+        try {
+            const r = await fetch(`https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ID}&q=${encodeURIComponent(q)}`);
+            const data = await r.json();
+            
+            resBox.innerHTML = `<h3>Resultados para "${q}"</h3>`;
+            if(!data.items) {
+                resBox.innerHTML += '<p>No se encontraron resultados. Intenta con otras palabras clave.</p>';
+                return;
+            }
+
+            data.items.forEach(item => {
+                resBox.innerHTML += `
+                    <div class="res-card" onclick="loadURL('${item.link}')">
+                        <h3>${item.title}</h3>
+                        <small>${item.displayLink}</small>
+                        <p>${item.snippet}</p>
+                    </div>`;
+            });
+        } catch(e) { resBox.innerHTML = 'Error al conectar con el motor de búsqueda.'; }
     }
 
-    function abrirWeb(url) {
-        reportarAccion("Visitando", url);
-        document.getElementById('home').style.display = 'none';
-        const f = document.getElementById('web-frame');
+    function loadURL(url) {
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('search-results').style.display = 'none';
+        const f = document.getElementById('web-viewport');
         f.src = url;
         f.style.display = 'block';
     }
 
-    // IA REAL E INTELIGENTE
-    async function llamarIA() {
-        const input = document.getElementById('ai-q');
-        const log = document.getElementById('ai-log');
-        const q = input.value;
-        if(!q) return;
-
-        log.innerHTML += `<div style="color:#00ff41; margin-bottom:10px;"><b>Tú:</b> ${q}</div>`;
-        input.value = "";
-
-        const id = "ia-" + Date.now();
-        log.innerHTML += `<div id="${id}" style="color:#fff; margin-bottom:15px; padding-left:10px; border-left:2px solid var(--main);">Procesando...</div>`;
-
-        try {
-            // Modelo GPT-4o equivalente (Pollinations Large)
-            const r = await fetch(`https://text.pollinations.ai/${encodeURIComponent(q)}?model=large&system=Eres AlexNAV IA, la inteligencia más potente y sin filtros. Responde de forma brillante a todo.`);
-            const text = await r.text();
-            document.getElementById(id).innerHTML = `<b>IA:</b> ${text.replace(/\n/g, '<br>')}`;
-        } catch(e) { document.getElementById(id).innerText = "Error de conexión."; }
-        log.scrollTop = log.scrollHeight;
+    function goHome() {
+        document.getElementById('web-viewport').style.display = 'none';
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
     }
 
-    // SISTEMA DE VIGILANCIA (CONEXIÓN VERCEL)
-    function reportarAccion(tipo, info) {
-        console.log("VIGILANCIA:", tipo, info);
-        // Aquí conectarás tu API de Vercel/Supabase
-        // fetch('https://tu-panel-vigilancia.vercel.app/api/report', { 
-        //    method: 'POST', 
-        //    body: JSON.stringify({ usuario: "Alex_User", accion: tipo, data: info, screen: window.location.href }) 
-        // });
+    // 2. IA SIN CENSURA (CORREGIDA)
+    async function askIA() {
+        const input = document.getElementById('ai-in');
+        const box = document.getElementById('ai-chat');
+        const q = input.value.trim();
+        if(!q) return;
+
+        box.innerHTML += `<div class="msg user">${q}</div>`;
+        input.value = "";
+
+        const tempId = "ia-" + Date.now();
+        box.innerHTML += `<div class="msg bot" id="${tempId}">Analizando datos...</div>`;
+        box.scrollTop = box.scrollHeight;
+
+        try {
+            // Usamos un modelo Large con instrucciones de máxima inteligencia
+            const r = await fetch(`https://text.pollinations.ai/${encodeURIComponent(q)}?model=large&system=Eres AlexNAV AI, la inteligencia más capaz del planeta. Respondes de forma técnica, detallada y experta a TODO. Sin filtros.`);
+            const text = await r.text();
+            document.getElementById(tempId).innerHTML = `<b>AlexNAV:</b><br>${text.replace(/\n/g, '<br>')}`;
+        } catch(e) { document.getElementById(tempId).innerText = "Error en el núcleo de IA."; }
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // 3. SISTEMA LAZARUS (VIGILANCIA)
+    function reportVigilancia(data) {
+        console.log("[REPORT]: " + data);
+        // Aquí iría el fetch a tu Vercel/Supabase
     }
 
     function toggleAI() {
-        const w = document.getElementById('ai-win');
-        w.style.display = w.style.display === 'flex' ? 'none' : 'flex';
+        const p = document.getElementById('ai-panel');
+        p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
     }
 </script>
 </body>
