@@ -2,163 +2,102 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexNAV Quantum</title>
+    <title>AlexNAV Quantum | Ultra Edition</title>
     <style>
-        :root { --main: #00d4ff; --bg: #050505; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+        :root { --main: #00d4ff; --bg: #0b0b0e; --glass: rgba(255,255,255,0.05); }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        /* HEADER ESTILO PREMIUM */
+        /* HEADER ESTILO SAFARI PRO */
         header { 
-            height: 60px; background: #111; display: flex; align-items: center; 
-            padding: 0 20px; border-bottom: 1px solid #333; gap: 15px;
+            height: 65px; background: rgba(13,13,17,0.8); backdrop-filter: blur(20px);
+            display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1); gap: 12px;
         }
-        .logo { font-weight: 900; color: var(--main); letter-spacing: -1px; font-size: 1.2rem; cursor: pointer; }
-        .omni-bar { 
-            flex: 1; background: #1a1a1a; border: 1px solid #333; 
-            color: white; padding: 10px 15px; border-radius: 10px; outline: none;
-            transition: 0.3s; font-size: 14px;
-        }
-        .omni-bar:focus { border-color: var(--main); background: #222; }
+        .nav-btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .nav-btn:hover { background: var(--main); color: black; }
+        
+        .omni-container { flex: 1; position: relative; display: flex; align-items: center; }
+        .omni-bar { width: 100%; background: #16161d; border: 1px solid #333; color: white; padding: 12px 15px; border-radius: 12px; outline: none; font-size: 14px; transition: 0.3s; }
+        .omni-bar:focus { border-color: var(--main); box-shadow: 0 0 15px rgba(0, 212, 255, 0.2); }
 
-        /* CONTENEDOR DE WEB */
-        #web-viewport { width: 100%; height: calc(100vh - 61px); border: none; background: white; }
+        /* VIEWPORT */
+        #web-viewport { width: 100%; height: calc(100vh - 66px); border: none; background: white; }
 
-        /* PANTALLAS DE CONTROL (OCULTAS POR DEFECTO) */
-        .overlay { 
-            position: fixed; inset: 0; display: none; flex-direction: column; 
-            align-items: center; justify-content: center; z-index: 99999; 
-            text-align: center; font-family: monospace; padding: 20px;
-        }
-        #block-screen { background: #8b0000; color: white; }
-        #mute-screen { background: #000; color: #00ff41; }
-        #link-screen { background: #4a0000; color: white; }
-        .timer { font-size: 4rem; margin-top: 20px; font-weight: bold; }
+        /* OVERLAYS (BLOQUEOS) */
+        .lazarus-screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100000; text-align: center; }
+        #block-screen { background: #600; color: white; }
+        #mute-screen { background: #000; color: var(--main); }
+        .timer-circle { font-size: 5rem; font-weight: 800; margin-top: 20px; font-family: monospace; }
     </style>
 </head>
 <body>
 
-<div id="block-screen" class="overlay">
-    <h1 style="font-size: 3rem;">BLOQUEADO POR ALEX</h1>
-    <p style="font-size: 1.2rem;">ACCESO RESTRINGIDO POR EL ADMINISTRADOR</p>
+<div id="block-screen" class="lazarus-screen">
+    <h1 style="font-size:4rem; margin:0;">BLOQUEADO</h1>
+    <p style="letter-spacing:5px;">SISTEMA RESTRINGIDO POR ADMINISTRADOR: ALEX</p>
 </div>
 
-<div id="mute-screen" class="overlay">
-    <h1>SISTEMA EN PAUSA</h1>
-    <p>TIEMPO DE ESPERA ASIGNADO:</p>
-    <div id="mute-timer" class="timer">00:00</div>
-</div>
-
-<div id="link-screen" class="overlay">
-    <h1 style="font-size: 2.5rem;">LINK INVÁLIDO</h1>
-    <p>ESTE DOMINIO ESTÁ EN LA LISTA NEGRA DE ALEXNAV</p>
-    <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; cursor:pointer;">REGRESAR</button>
+<div id="mute-screen" class="lazarus-screen">
+    <h2>TIEMPO DE ESPERA ADMINISTRATIVO</h2>
+    <div id="mute-timer" class="timer-circle">00:00</div>
 </div>
 
 <header>
-    <div class="logo" onclick="location.reload()">ALEXNAV</div>
-    <input type="text" id="omni-in" class="omni-bar" placeholder="Busca o escribe una URL (ej: google.com)" onkeypress="if(event.key==='Enter') ejecutarNavegacion()">
+    <div class="nav-btn" onclick="goHome()">🏠</div>
+    <div class="nav-btn" onclick="document.getElementById('web-viewport').contentWindow.location.reload()">⟳</div>
+    <div class="omni-container">
+        <input type="text" id="omni-in" class="omni-bar" placeholder="Busca o escribe URL..." onkeypress="if(event.key==='Enter') navegar()">
+    </div>
+    <div class="nav-btn" onclick="alert('Configuración: AlexNAV v2.0')">⚙️</div>
 </header>
 
-<iframe id="web-viewport" src="about:blank"></iframe>
+<iframe id="web-viewport" src="https://www.google.com/search?igu=1"></iframe>
 
 <script>
-    // --- CONFIGURACIÓN ---
     const SB_URL = "https://gmvczheriaqouwynfdyv.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs";
+    const USER_ID = (navigator.platform.includes("Win") ? "PC" : "Device") + "_" + Math.floor(Math.random()*899+100);
 
-    // --- DETECCIÓN DE DISPOSITIVO ---
-    function getDevice() {
-        const ua = navigator.userAgent;
-        if (/tablet|ipad|playbook|silk/i.test(ua)) return "Tablet";
-        if (/Mobile|Android|iP(hone|od)/i.test(ua)) return "Smartphone";
-        return "PC-Desktop";
-    }
-    const USER_ID = getDevice() + "_" + Math.floor(Math.random() * 899 + 100);
-    let muteInterval;
-
-    // --- MOTOR DE NAVEGACIÓN ---
-    async function ejecutarNavegacion() {
-        const input = document.getElementById('omni-in');
-        const query = input.value.trim().toLowerCase();
+    async function navegar() {
+        const query = document.getElementById('omni-in').value.trim();
         if(!query) return;
 
-        // 1. Verificar Links Bloqueados en Supabase
-        try {
-            const res = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {
-                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-            });
-            const prohibidos = await res.json();
-            if (prohibidos.some(item => query.includes(item.url))) {
-                document.getElementById('link-screen').style.display = 'flex';
-                reportar("INTENTO_PROHIBIDO", query);
-                return;
-            }
-        } catch(e) { console.log("Error checking blacklist"); }
-
-        // 2. Procesar URL
-        let destino = "";
-        if (query.includes('.') && !query.includes(' ')) {
-            destino = query.startsWith('http') ? query : 'https://' + query;
-        } else {
-            destino = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        // Comprobación de Link Bloqueado (Filtro Lazarus)
+        const res = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}});
+        const links = await res.json();
+        if(links.some(l => query.toLowerCase().includes(l.url.toLowerCase()))) {
+            alert("Acceso Denegado: Este link está prohibido.");
+            return;
         }
 
-        document.getElementById('web-viewport').src = destino;
-        reportar("NAVEGACION", destino);
+        let url = query.includes('.') && !query.includes(' ') ? (query.startsWith('http') ? query : 'https://'+query) : "https://www.google.com/search?q="+encodeURIComponent(query);
+        document.getElementById('web-viewport').src = url;
+        reportar(query, url);
     }
 
-    // --- SISTEMA DE REPORTE SILENCIOSO ---
-    async function reportar(accion, detalle) {
-        try {
-            await fetch(`${SB_URL}/rest/v1/logs`, {
-                method: 'POST',
-                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    usuario_id: USER_ID,
-                    accion: accion,
-                    contenido: detalle,
-                    url_actual: document.getElementById('web-viewport').src
-                })
-            });
-        } catch(e) {}
+    async function reportar(c, u) {
+        fetch(`${SB_URL}/rest/v1/logs`, {
+            method:'POST', headers:{'apikey':SB_KEY, 'Content-Type':'application/json'},
+            body: JSON.stringify({usuario_id:USER_ID, accion:"NAV", contenido:c, url_actual:u})
+        });
     }
 
-    // --- RECEPTOR DE COMANDOS REMOTOS ---
+    function goHome() { document.getElementById('web-viewport').src = "https://www.google.com/search?igu=1"; }
+
+    // COMANDOS EN TIEMPO REAL (SIN DELAY)
     setInterval(async () => {
-        try {
-            const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${USER_ID}&activa=eq.true`, {
-                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-            });
-            const ordenes = await res.json();
-            
-            if (ordenes.length > 0) {
-                const cmd = ordenes[0];
-                if (cmd.orden === 'BLOQUEAR') document.getElementById('block-screen').style.display = 'flex';
-                if (cmd.orden === 'MUTE') activarMute(cmd.minutos);
-                if (cmd.orden === 'LIBERAR') {
-                    document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none');
-                    clearInterval(muteInterval);
-                }
+        const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${USER_ID}&activa=eq.true`, {headers:{'apikey':SB_KEY}});
+        const data = await res.json();
+        if(data.length > 0) {
+            const o = data[0];
+            if(o.orden === 'BAN') document.getElementById('block-screen').style.display = 'flex';
+            if(o.orden === 'UNBAN') document.getElementById('block-screen').style.display = 'none';
+            if(o.orden === 'MUTE') {
+                document.getElementById('mute-screen').style.display = 'flex';
+                // Lógica de timer aquí si es necesaria
             }
-        } catch(e) {}
-    }, 3000);
-
-    function activarMute(m) {
-        let segs = m * 60;
-        const display = document.getElementById('mute-timer');
-        document.getElementById('mute-screen').style.display = 'flex';
-        clearInterval(muteInterval);
-        muteInterval = setInterval(() => {
-            let min = Math.floor(segs / 60);
-            let s = segs % 60;
-            display.innerText = `${min}:${s < 10 ? '0' : ''}${s}`;
-            if (--segs < 0) {
-                document.getElementById('mute-screen').style.display = 'none';
-                clearInterval(muteInterval);
-            }
-        }, 1000);
-    }
+            if(o.orden === 'UNMUTE') document.getElementById('mute-screen').style.display = 'none';
+        }
+    }, 1500); // Bajado a 1.5s para menos delay
 </script>
 </body>
 </html>
