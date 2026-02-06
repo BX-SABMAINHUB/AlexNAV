@@ -2,151 +2,149 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AlexNAV | Explorador Privado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexNAV Pro | Navegador con IA</title>
     <style>
-        :root { --main: #00d4ff; --bg: #0a0a0a; --panel: #161616; --text: #e0e0e0; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        :root { --main: #00d4ff; --bg: #050505; --panel: #121212; --text: #ffffff; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* CABECERA ESTILO STARTPAGE */
+        /* HEADER REDISEÑADO */
         header { 
-            height: 65px; background: var(--panel); display: flex; align-items: center; 
-            padding: 0 20px; border-bottom: 2px solid var(--main); z-index: 1000; position: relative;
+            height: 60px; background: var(--panel); display: flex; align-items: center; 
+            padding: 0 15px; border-bottom: 1px solid #333; z-index: 1000;
         }
-        #logo { color: var(--main); font-weight: bold; font-size: 1.5rem; margin-right: 25px; cursor: pointer; }
+        #logo-nav { color: var(--main); font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-right: 15px; }
         
-        .search-area { flex: 1; display: flex; align-items: center; background: #222; border-radius: 30px; padding: 5px 15px; border: 1px solid #333; }
-        .search-area input { flex: 1; background: transparent; border: none; color: white; padding: 8px; outline: none; font-size: 1rem; }
+        .address-bar { flex: 1; display: flex; align-items: center; background: #1e1e1e; border-radius: 10px; padding: 5px 12px; border: 1px solid #333; }
+        .address-bar input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 0.9rem; }
         
-        .nav-buttons { display: flex; gap: 10px; margin-left: 15px; }
-        .btn { background: var(--main); color: black; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
-        .btn-red { background: #ff4444; color: white; }
+        .tool-icons { display: flex; gap: 12px; margin: 0 15px; font-size: 1.2rem; cursor: pointer; }
+        .icon:hover { color: var(--main); transform: scale(1.1); }
 
-        /* CONTENEDORES DE PANTALLA COMPLETA */
-        #main-view { height: calc(100vh - 67px); width: 100%; position: relative; }
+        /* CONTENEDORES */
+        #browser-viewport { height: calc(100vh - 60px); width: 100%; position: relative; }
         iframe { width: 100%; height: 100%; border: none; background: white; display: none; }
         
-        /* RESULTADOS Y HISTORIAL */
         #home-screen { padding: 40px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; height: 100%; box-sizing: border-box; }
-        .results-box { width: 100%; max-width: 900px; min-height: 400px; }
-        
-        .history-panel { width: 100%; max-width: 900px; margin-top: 30px; background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        .history-item span { color: var(--main); cursor: pointer; }
 
-        /* OCULTAR "OPTIMIZADO POR GOOGLE" */
-        .gsc-control-cse { background: transparent !important; border: none !important; padding: 0 !important; }
-        .gsc-adBlock, .gcsc-branding { display: none !important; } /* Esto borra la marca de Google */
-        .gsc-search-button-v2 { display: none !important; } 
+        /* BOTÓN FLOTANTE IA */
+        #ai-button {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            background: var(--main); border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; box-shadow: 0 0 20px var(--main);
+            z-index: 2000; transition: 0.3s; font-weight: bold; color: black;
+        }
+        #ai-button:hover { transform: rotate(15deg) scale(1.1); }
+
+        /* VENTANA DE IA */
+        #ai-panel {
+            position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px;
+            background: #181818; border-radius: 15px; border: 1px solid var(--main);
+            display: none; flex-direction: column; z-index: 2000; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .ai-header { background: var(--main); color: black; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
+        #ai-chat { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px; }
+        .ai-msg { background: #333; padding: 8px 12px; border-radius: 10px; align-self: flex-start; max-width: 80%; }
+        .user-msg { background: var(--main); color: black; align-self: flex-end; }
+        .ai-input-area { display: flex; padding: 10px; border-top: 1px solid #333; }
+        .ai-input-area input { flex: 1; background: #222; border: none; color: white; padding: 8px; border-radius: 5px; outline: none; }
+
+        /* AJUSTES */
+        #settings-panel {
+            position: absolute; top: 70px; right: 20px; width: 250px; 
+            background: var(--panel); border: 1px solid #444; border-radius: 10px;
+            display: none; padding: 15px; z-index: 3000;
+        }
+
+        /* OCULTAR PUBLICIDAD GOOGLE */
+        .gcsc-branding, .gsc-adBlock { display: none !important; }
     </style>
 </head>
 <body>
 
 <header>
-    <div id="logo" onclick="irAHome()">AlexNAV</div>
-    <div class="search-area">
-        <input type="text" id="main-input" placeholder="Busca algo o pega un enlace (ej: wikipedia.org)..." onkeypress="checkEnter(event)">
+    <div id="logo-nav" onclick="location.reload()">AlexNAV</div>
+    
+    <div class="tool-icons">
+        <span class="icon" onclick="location.reload()">⟳</span> <span class="icon" onclick="window.open(location.href, '_blank')">⧉</span> </div>
+
+    <div class="address-bar">
+        <input type="text" id="url-input" placeholder="Busca o escribe URL..." onkeypress="if(event.key==='Enter') procesar()">
     </div>
-    <div class="nav-buttons">
-        <button class="btn" onclick="procesarEntrada()">EXPLORAR</button>
-        <button id="btn-cerrar" class="btn btn-red" style="display:none;" onclick="irAHome()">SALIR DE WEB</button>
-    </div>
+
+    <div class="tool-icons">
+        <span class="icon" onclick="compartir()">➦</span> <span class="icon" onclick="toggleSettings()">⚙</span> </div>
 </header>
 
-<div id="main-view">
+<div id="browser-viewport">
     <div id="home-screen">
-        <div class="results-box">
+        <h1 style="color: var(--main); font-size: 3rem;">AlexNAV</h1>
+        <div style="width: 100%; max-width: 800px;">
             <script async src="https://cse.google.com/cse.js?cx=b3588f8452e4c4301"></script>
             <div class="gcse-search"></div>
         </div>
-
-        <div class="history-panel">
-            <h3>Historial Reciente</h3>
-            <div id="history-list"></div>
-            <button class="btn btn-red" style="margin-top:15px; padding: 5px 10px;" onclick="limpiarHistorial()">Borrar todo</button>
-        </div>
     </div>
-    
-    <iframe id="web-viewer"></iframe>
+    <iframe id="viewer"></iframe>
 </div>
 
-<script>
-    // 1. LÓGICA DE BÚSQUEDA (URL O PALABRAS)
-    function procesarEntrada() {
-        const input = document.getElementById('main-input').value.trim();
-        if(!input) return;
+<div id="ai-button" onclick="toggleAI()">🤖</div>
+<div id="ai-panel">
+    <div class="ai-header">
+        <span>AlexNAV IA</span>
+        <span onclick="toggleAI()" style="cursor:pointer">✖</span>
+    </div>
+    <div id="ai-chat">
+        <div class="ai-msg">¡Hola! Soy la IA de AlexNAV. ¿En qué puedo ayudarte hoy?</div>
+    </div>
+    <div class="ai-input-area">
+        <input type="text" id="ai-q" placeholder="Pregúntame algo..." onkeypress="if(event.key==='Enter') preguntarIA()">
+    </div>
+</div>
 
-        // Si es una URL directa (ej: youtube.com)
-        if (input.includes('.') && !input.includes(' ')) {
-            const url = input.startsWith('http') ? input : 'https://' + input;
-            abrirWeb(url);
+<div id="settings-panel">
+    <h4>Ajustes AlexNAV</h4>
+    <p style="font-size: 0.8rem;">Color de acento:</p>
+    <input type="color" onchange="document.documentElement.style.setProperty('--main', this.value)" value="#00d4ff">
+    <hr>
+    <button onclick="localStorage.clear(); location.reload();" style="width:100%; background:#ff4444; border:none; padding:5px; color:white; cursor:pointer;">Borrar Datos</button>
+</div>
+
+<script src="ia.js"></script>
+<script>
+    function procesar() {
+        const val = document.getElementById('url-input').value;
+        if(val.includes('.') && !val.includes(' ')) {
+            const url = val.startsWith('http') ? val : 'https://' + val;
+            document.getElementById('home-screen').style.display = 'none';
+            const f = document.getElementById('viewer');
+            f.src = url;
+            f.style.display = 'block';
         } else {
-            // Si es búsqueda, usamos el motor interno
-            const searchInput = document.querySelector('input.gsc-input');
-            const searchBtn = document.querySelector('button.gsc-search-button');
-            if(searchInput) {
-                searchInput.value = input;
-                searchBtn.click();
-                irAHome(); // Asegura ver los resultados
+            // Activar búsqueda de Google
+            const gInput = document.querySelector('input.gsc-input');
+            if(gInput) {
+                gInput.value = val;
+                document.querySelector('button.gsc-search-button').click();
             }
         }
-        guardarHistorial(input);
     }
 
-    function checkEnter(e) { if(e.key === 'Enter') procesarEntrada(); }
-
-    // 2. NAVEGACIÓN EN LA MISMA PESTAÑA
-    function abrirWeb(url) {
-        const iframe = document.getElementById('web-viewer');
-        const home = document.getElementById('home-screen');
-        const btnCerrar = document.getElementById('btn-cerrar');
-
-        home.style.display = 'none';
-        iframe.src = url;
-        iframe.style.display = 'block';
-        btnCerrar.style.display = 'block';
+    function toggleAI() {
+        const p = document.getElementById('ai-panel');
+        p.style.display = (p.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    function irAHome() {
-        document.getElementById('web-viewer').style.display = 'none';
-        document.getElementById('web-viewer').src = '';
-        document.getElementById('home-screen').style.display = 'flex';
-        document.getElementById('btn-cerrar').style.display = 'none';
+    function toggleSettings() {
+        const s = document.getElementById('settings-panel');
+        s.style.display = (s.style.display === 'block') ? 'none' : 'block';
     }
 
-    // 3. SISTEMA DE HISTORIAL (LOCALSTORAGE)
-    function guardarHistorial(item) {
-        let history = JSON.parse(localStorage.getItem('alexnav_hist')) || [];
-        history.unshift({texto: item, fecha: new Date().toLocaleTimeString()});
-        if(history.length > 8) history.pop();
-        localStorage.setItem('alexnav_hist', JSON.stringify(history));
-        mostrarHistorial();
+    function compartir() {
+        const url = document.getElementById('viewer').src || window.location.href;
+        navigator.clipboard.writeText(url);
+        alert("Enlace copiado al portapapeles: " + url);
     }
-
-    function mostrarHistorial() {
-        const list = document.getElementById('history-list');
-        const history = JSON.parse(localStorage.getItem('alexnav_hist')) || [];
-        list.innerHTML = history.length ? '' : '<p style="color:#555">Historial vacío</p>';
-        history.forEach(item => {
-            list.innerHTML += `<div class="history-item"><span>${item.texto}</span> <small>${item.fecha}</small></div>`;
-        });
-    }
-
-    function limpiarHistorial() {
-        localStorage.removeItem('alexnav_hist');
-        mostrarHistorial();
-    }
-
-    window.onload = mostrarHistorial;
-
-    // CAPTURAR CLICS EN RESULTADOS
-    document.addEventListener('click', function(e) {
-        const link = e.target.closest('a.gs-title');
-        if (link) {
-            e.preventDefault();
-            abrirWeb(link.href);
-        }
-    }, true);
 </script>
-
 </body>
 </html>
