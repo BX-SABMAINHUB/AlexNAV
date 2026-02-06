@@ -1,34 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Mi Navegador Ligero</title>
+    <meta charset="UTF-8">
+    <title>Explorador Alpha</title>
     <style>
-        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        #nav-bar { background: #333; padding: 10px; display: flex; }
-        input { flex-grow: 1; padding: 8px; border: none; border-radius: 4px; }
-        button { margin-left: 5px; padding: 8px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
-        iframe { flex-grow: 1; border: none; width: 100%; height: 100%; }
+        /* ESTILO Y DISEÑO */
+        body { 
+            background-color: #121212; 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+        }
+
+        .container { width: 90%; max-width: 800px; text-align: center; }
+
+        h1 { font-size: 3rem; margin-bottom: 20px; color: #00d4ff; }
+
+        .search-box {
+            display: flex;
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 50px;
+            border: 2px solid #333;
+            transition: 0.3s;
+        }
+
+        .search-box:focus-within { border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff55; }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            outline: none;
+        }
+
+        button {
+            background: #00d4ff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* MARCADORES (Tus sitios favoritos) */
+        .bookmarks { margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+
+        .chip {
+            background: #252525;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #bbb;
+            transition: 0.3s;
+            border: 1px solid #333;
+        }
+
+        .chip:hover { background: #333; color: white; transform: translateY(-3px); }
     </style>
 </head>
 <body>
-    <div id="nav-bar">
-        <input type="text" id="url-input" placeholder="Escribe una URL o busca en Google...">
-        <button onclick="navegar()">Ir</button>
+
+    <div class="container">
+        <h1>Explorador Alpha</h1>
+        
+        <div class="search-box">
+            <input type="text" id="busqueda" placeholder="Busca en la web o escribe una URL...">
+            <button onclick="buscar()">Explorar</button>
+        </div>
+
+        <div class="bookmarks">
+            <a href="https://www.youtube.com" target="_blank" class="chip">YouTube</a>
+            <a href="https://www.wikipedia.org" target="_blank" class="chip">Wikipedia</a>
+            <a href="https://github.com" target="_blank" class="chip">GitHub</a>
+            <a href="https://openai.com" target="_blank" class="chip">AI Lab</a>
+        </div>
     </div>
-    <iframe id="visor" src="https://www.bing.com"></iframe>
 
     <script>
-        function navegar() {
-            let url = document.getElementById('url-input').value;
-            let visor = document.getElementById('visor');
-            
-            if (!url.includes('.')) {
-                url = "https://www.google.com/search?q=" + url;
-            } else if (!url.startsWith('http')) {
-                url = "https://" + url;
+        function buscar() {
+            const query = document.getElementById('busqueda').value;
+            if (!query) return;
+
+            // Si es una URL (tiene punto y no espacios), va directo
+            if (query.includes('.') && !query.includes(' ')) {
+                let url = query.startsWith('http') ? query : 'https://' + query;
+                window.open(url, '_blank');
+            } else {
+                // Si no, busca en Google
+                window.open('https://www.google.com/search?q=' + encodeURIComponent(query), '_blank');
             }
-            visor.src = url;
         }
+
+        // Permitir usar la tecla "Enter"
+        document.getElementById('busqueda').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') buscar();
+        });
     </script>
+
 </body>
 </html>
