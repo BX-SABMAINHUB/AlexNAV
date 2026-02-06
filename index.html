@@ -3,83 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexNAV Pro | Navegador con IA</title>
+    <title>AlexNAV Pro | Explorador Inteligente</title>
     <style>
         :root { --main: #00d4ff; --bg: #050505; --panel: #121212; --text: #ffffff; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
 
-        /* HEADER REDISEÑADO */
+        /* BARRA SUPERIOR */
         header { 
             height: 60px; background: var(--panel); display: flex; align-items: center; 
-            padding: 0 15px; border-bottom: 1px solid #333; z-index: 1000;
+            padding: 0 15px; border-bottom: 1px solid #333; z-index: 1000; position: relative;
         }
-        #logo-nav { color: var(--main); font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-right: 15px; }
+        #logo-nav { color: var(--main); font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-right: 15px; text-transform: uppercase; }
         
         .address-bar { flex: 1; display: flex; align-items: center; background: #1e1e1e; border-radius: 10px; padding: 5px 12px; border: 1px solid #333; }
         .address-bar input { flex: 1; background: transparent; border: none; color: white; outline: none; font-size: 0.9rem; }
         
-        .tool-icons { display: flex; gap: 12px; margin: 0 15px; font-size: 1.2rem; cursor: pointer; }
-        .icon:hover { color: var(--main); transform: scale(1.1); }
+        .tool-icons { display: flex; gap: 10px; margin: 0 15px; }
+        .nav-icon { background: transparent; border: none; color: white; font-size: 1.1rem; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 5px; }
+        .nav-icon:hover { background: rgba(255,255,255,0.1); color: var(--main); }
 
-        /* CONTENEDORES */
+        /* PANTALLAS */
         #browser-viewport { height: calc(100vh - 60px); width: 100%; position: relative; }
         iframe { width: 100%; height: 100%; border: none; background: white; display: none; }
         
         #home-screen { padding: 40px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; height: 100%; box-sizing: border-box; }
 
-        /* BOTÓN FLOTANTE IA */
+        /* IA DE ALEXNAV */
         #ai-button {
             position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
             background: var(--main); border-radius: 50%; display: flex; align-items: center;
             justify-content: center; cursor: pointer; box-shadow: 0 0 20px var(--main);
-            z-index: 2000; transition: 0.3s; font-weight: bold; color: black;
+            z-index: 2000; transition: 0.3s; font-size: 1.5rem;
         }
-        #ai-button:hover { transform: rotate(15deg) scale(1.1); }
-
-        /* VENTANA DE IA */
         #ai-panel {
             position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px;
             background: #181818; border-radius: 15px; border: 1px solid var(--main);
-            display: none; flex-direction: column; z-index: 2000; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: none; flex-direction: column; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .ai-header { background: var(--main); color: black; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
-        #ai-chat { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px; }
-        .ai-msg { background: #333; padding: 8px 12px; border-radius: 10px; align-self: flex-start; max-width: 80%; }
-        .user-msg { background: var(--main); color: black; align-self: flex-end; }
-        .ai-input-area { display: flex; padding: 10px; border-top: 1px solid #333; }
-        .ai-input-area input { flex: 1; background: #222; border: none; color: white; padding: 8px; border-radius: 5px; outline: none; }
+        .ai-header { background: var(--main); color: black; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; border-radius: 14px 14px 0 0; }
+        #ai-chat { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #111; }
+        .ai-msg { background: #222; padding: 10px; border-radius: 10px; align-self: flex-start; max-width: 85%; font-size: 0.9rem; line-height: 1.4; border: 1px solid #333; }
+        .user-msg { background: var(--main); color: black; align-self: flex-end; border: none; }
+        .ai-input-area { display: flex; padding: 12px; background: #181818; border-top: 1px solid #333; }
+        .ai-input-area input { flex: 1; background: #252525; border: none; color: white; padding: 10px; border-radius: 5px; outline: none; }
 
-        /* AJUSTES */
+        /* AJUSTES E HISTORIAL */
         #settings-panel {
-            position: absolute; top: 70px; right: 20px; width: 250px; 
-            background: var(--panel); border: 1px solid #444; border-radius: 10px;
-            display: none; padding: 15px; z-index: 3000;
+            position: absolute; top: 65px; right: 15px; width: 260px; 
+            background: var(--panel); border: 1px solid #444; border-radius: 12px;
+            display: none; padding: 15px; z-index: 3000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
+        .history-item { font-size: 0.8rem; padding: 5px 0; border-bottom: 1px solid #333; color: #aaa; }
 
-        /* OCULTAR PUBLICIDAD GOOGLE */
+        /* LIMPIEZA GOOGLE */
         .gcsc-branding, .gsc-adBlock { display: none !important; }
+        .gsc-control-cse { background: transparent !important; border: none !important; padding: 0 !important; }
     </style>
 </head>
 <body>
 
 <header>
-    <div id="logo-nav" onclick="location.reload()">AlexNAV</div>
+    <div id="logo-nav" onclick="irHome()">AlexNAV</div>
     
     <div class="tool-icons">
-        <span class="icon" onclick="location.reload()">⟳</span> <span class="icon" onclick="window.open(location.href, '_blank')">⧉</span> </div>
+        <button class="nav-icon" onclick="refrescar()">🔄</button>
+        <button class="nav-icon" onclick="nuevaPestana()">➕</button>
+    </div>
 
     <div class="address-bar">
-        <input type="text" id="url-input" placeholder="Busca o escribe URL..." onkeypress="if(event.key==='Enter') procesar()">
+        <input type="text" id="url-input" placeholder="Busca en la red o escribe una URL..." onkeypress="if(event.key==='Enter') procesarNavegacion()">
     </div>
 
     <div class="tool-icons">
-        <span class="icon" onclick="compartir()">➦</span> <span class="icon" onclick="toggleSettings()">⚙</span> </div>
+        <button class="nav-icon" onclick="compartir()">🔗</button>
+        <button class="nav-icon" onclick="toggleSettings()">⚙️</button>
+    </div>
 </header>
 
 <div id="browser-viewport">
     <div id="home-screen">
-        <h1 style="color: var(--main); font-size: 3rem;">AlexNAV</h1>
+        <h1 style="color: var(--main); font-size: 3.5rem; margin-top: 50px; letter-spacing: -2px;">AlexNAV</h1>
+        <p style="color: #666; margin-bottom: 30px;">Explorador Privado con Inteligencia Artificial</p>
         <div style="width: 100%; max-width: 800px;">
             <script async src="https://cse.google.com/cse.js?cx=b3588f8452e4c4301"></script>
             <div class="gcse-search"></div>
@@ -91,43 +95,71 @@
 <div id="ai-button" onclick="toggleAI()">🤖</div>
 <div id="ai-panel">
     <div class="ai-header">
-        <span>AlexNAV IA</span>
-        <span onclick="toggleAI()" style="cursor:pointer">✖</span>
+        <span>AlexNAV IA v2.0</span>
+        <span onclick="toggleAI()" style="cursor:pointer">✕</span>
     </div>
     <div id="ai-chat">
-        <div class="ai-msg">¡Hola! Soy la IA de AlexNAV. ¿En qué puedo ayudarte hoy?</div>
+        <div class="ai-msg">¡Hola! Soy la inteligencia de AlexNAV. Pregúntame lo que quieras, soy experta en todo.</div>
     </div>
     <div class="ai-input-area">
-        <input type="text" id="ai-q" placeholder="Pregúntame algo..." onkeypress="if(event.key==='Enter') preguntarIA()">
+        <input type="text" id="ai-q" placeholder="Escribe tu duda..." onkeypress="if(event.key==='Enter') preguntarIA()">
+        <button onclick="preguntarIA()" style="background:none; border:none; color:var(--main); font-size:1.2rem; cursor:pointer; margin-left:10px;">➤</button>
     </div>
 </div>
 
 <div id="settings-panel">
-    <h4>Ajustes AlexNAV</h4>
-    <p style="font-size: 0.8rem;">Color de acento:</p>
-    <input type="color" onchange="document.documentElement.style.setProperty('--main', this.value)" value="#00d4ff">
-    <hr>
-    <button onclick="localStorage.clear(); location.reload();" style="width:100%; background:#ff4444; border:none; padding:5px; color:white; cursor:pointer;">Borrar Datos</button>
+    <h3 style="margin-top:0; color:var(--main);">Ajustes</h3>
+    <label style="font-size:0.8rem">Color del Navegador:</label><br>
+    <input type="color" onchange="document.documentElement.style.setProperty('--main', this.value)" value="#00d4ff" style="width:100%; margin-top:5px;">
+    <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+    <h4 style="margin:0">Historial</h4>
+    <div id="historial-lista" style="max-height:100px; overflow-y:auto; margin:10px 0;"></div>
+    <button onclick="borrarTodo()" style="width:100%; background:#ff4444; border:none; padding:8px; color:white; border-radius:5px; cursor:pointer; font-weight:bold;">Borrar Datos</button>
 </div>
 
 <script src="ia.js"></script>
 <script>
-    function procesar() {
-        const val = document.getElementById('url-input').value;
-        if(val.includes('.') && !val.includes(' ')) {
-            const url = val.startsWith('http') ? val : 'https://' + val;
+    function procesarNavegacion() {
+        const input = document.getElementById('url-input').value.trim();
+        if(!input) return;
+
+        if(input.includes('.') && !input.includes(' ')) {
+            const url = input.startsWith('http') ? input : 'https://' + input;
             document.getElementById('home-screen').style.display = 'none';
             const f = document.getElementById('viewer');
             f.src = url;
             f.style.display = 'block';
         } else {
-            // Activar búsqueda de Google
             const gInput = document.querySelector('input.gsc-input');
             if(gInput) {
-                gInput.value = val;
+                gInput.value = input;
                 document.querySelector('button.gsc-search-button').click();
+                irHome();
             }
         }
+        guardarHistorial(input);
+    }
+
+    function irHome() {
+        document.getElementById('viewer').style.display = 'none';
+        document.getElementById('home-screen').style.display = 'flex';
+    }
+
+    function refrescar() { 
+        const f = document.getElementById('viewer');
+        if(f.style.display === 'block') f.src = f.src;
+        else location.reload();
+    }
+
+    function nuevaPestana() {
+        const url = document.getElementById('viewer').src || window.location.href;
+        window.open(url, '_blank');
+    }
+
+    function compartir() {
+        const url = document.getElementById('viewer').src || window.location.href;
+        navigator.clipboard.writeText(url);
+        alert("Enlace copiado: " + url);
     }
 
     function toggleAI() {
@@ -140,11 +172,29 @@
         s.style.display = (s.style.display === 'block') ? 'none' : 'block';
     }
 
-    function compartir() {
-        const url = document.getElementById('viewer').src || window.location.href;
-        navigator.clipboard.writeText(url);
-        alert("Enlace copiado al portapapeles: " + url);
+    function guardarHistorial(item) {
+        let h = JSON.parse(localStorage.getItem('h_alex')) || [];
+        h.unshift(item);
+        if(h.length > 5) h.pop();
+        localStorage.setItem('h_alex', JSON.stringify(h));
+        mostrarHistorial();
     }
+
+    function mostrarHistorial() {
+        const l = document.getElementById('historial-lista');
+        let h = JSON.parse(localStorage.getItem('h_alex')) || [];
+        l.innerHTML = h.map(i => `<div class="history-item">${i}</div>`).join('');
+    }
+
+    function borrarTodo() { localStorage.clear(); location.reload(); }
+    
+    window.onload = mostrarHistorial;
+
+    // Abrir links de búsqueda en AlexNAV
+    document.addEventListener('click', e => {
+        const a = e.target.closest('a.gs-title');
+        if(a) { e.preventDefault(); document.getElementById('url-input').value = a.href; procesarNavegacion(); }
+    }, true);
 </script>
 </body>
 </html>
