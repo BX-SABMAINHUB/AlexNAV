@@ -2,60 +2,120 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AlexNAV Pro | Live</title>
+    <title>AlexNAV Quantum</title>
     <style>
-        :root { --main: #00d4ff; --bg: #050505; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; overflow: hidden; }
-        header { height: 60px; background: #111; display: flex; align-items: center; padding: 0 20px; border-bottom: 2px solid var(--main); }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; font-family: sans-serif; overflow: hidden; }
+        header { height: 60px; background: #111; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #333; }
         input { flex: 1; background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; outline: none; }
         #web-viewport { width: 100%; height: calc(100vh - 60px); border: none; background: white; }
-        #block-screen { position: fixed; inset: 0; background: black; color: red; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; text-align: center; }
+        
+        /* PANTALLAS DE BLOQUEO */
+        .overlay { position: fixed; inset: 0; background: #8b0000; color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; text-align: center; font-family: 'Courier New', monospace; }
+        #mute-screen { background: #000; }
+        .timer { font-size: 3rem; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div id="block-screen">
-    <h1 style="font-size: 3rem;">⚠️ ACCESO INVÁLIDO</h1>
-    <p>SISTEMA BLOQUEADO POR ADMINISTRACIÓN [LAZARUS]</p>
+<div id="block-screen" class="overlay">
+    <h1 style="font-size: 3.5rem;">BLOQUEADO POR ALEX</h1>
+    <p>TU ACCESO HA SIDO RESTRINGIDO PERMANENTEMENTE</p>
+</div>
+
+<div id="mute-screen" class="overlay">
+    <h1>SISTEMA EN ESPERA</h1>
+    <p>POR FAVOR, ESPERA A QUE EL ADMINISTRADOR TE HABILITE</p>
+    <div id="mute-timer" class="timer">00:00</div>
+</div>
+
+<div id="link-screen" class="overlay">
+    <h1 style="font-size: 3rem;">LINK INVÁLIDO</h1>
+    <p>ACCESO DENEGADO A ESTE DOMINIO</p>
 </div>
 
 <header>
-    <div style="font-weight:900; color:var(--main); margin-right:20px;">ALEXNAV</div>
-    <input type="text" id="omni-in" placeholder="Busca o escribe una URL..." onkeypress="if(event.key==='Enter') navegar()">
+    <input type="text" id="omni-in" placeholder="Buscar o ir a..." onkeypress="if(event.key==='Enter') navegar()">
 </header>
-
 <iframe id="web-viewport"></iframe>
 
 <script>
     const SUPABASE_URL = "https://gmvczheriaqouwynfdyv.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs";
-    const USER_ID = "DEVICE_" + Math.floor(Math.random()*999);
+    const SUPABASE_KEY = "tu_anon_key_aqui"; 
+    
+    // DETECTAR MODELO REAL
+    const getDeviceModel = () => {
+        const ua = navigator.userAgent;
+        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "Tablet";
+        if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "Smartphone";
+        return "PC / Desktop";
+    };
+
+    const USER_ID = getDeviceModel() + "_" + Math.floor(Math.random()*999);
+    let muteInterval;
 
     async function navegar() {
-        const val = document.getElementById('omni-in').value;
+        const val = document.getElementById('omni-in').value.toLowerCase();
+        
+        // 1. Verificar Lista Negra
+        const { data: links } = await fetch(`${SUPABASE_URL}/rest/v1/links_bloqueados?select=url`, {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        }).then(res => res.json());
+
+        if (links.some(l => val.includes(l.url))) {
+            document.getElementById('link-screen').style.display = 'flex';
+            reportar("LINK_BLOQUEADO", val);
+            return;
+        }
+
         const frame = document.getElementById('web-viewport');
         let urlFinal = val.includes('.') && !val.includes(' ') ? (val.startsWith('http') ? val : 'https://' + val) : "https://www.google.com/search?q=" + encodeURIComponent(val);
         
         frame.src = urlFinal;
-        reportar(val, urlFinal);
+        reportar("NAVEGACION", urlFinal);
     }
 
-    async function reportar(q, url) {
-        await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
+    async function reportar(accion, contenido) {
+        fetch(`${SUPABASE_URL}/rest/v1/logs`, {
             method: 'POST',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuario_id: USER_ID, accion: "BUSQUEDA", contenido: q, url_actual: url })
+            body: JSON.stringify({ usuario_id: USER_ID, accion: accion, contenido: contenido, url_actual: document.getElementById('web-viewport').src })
         });
     }
 
-    // Escucha de Bloqueo
+    // ESCUCHA DE COMANDOS (BLOQUEO Y MUTE)
     setInterval(async () => {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/ordenes?usuario_id=eq.${USER_ID}&activa=eq.true`, {
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
         });
-        const data = await res.json();
-        if(data.length > 0) document.getElementById('block-screen').style.display = 'flex';
+        const ordenes = await res.json();
+        
+        if (ordenes.length > 0) {
+            const o = ordenes[0];
+            if (o.orden === 'BLOQUEAR') document.getElementById('block-screen').style.display = 'flex';
+            if (o.orden === 'MUTE') iniciarMute(o.minutos);
+            if (o.orden === 'LIBERAR') {
+                document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none');
+                clearInterval(muteInterval);
+            }
+        }
     }, 3000);
+
+    function iniciarMute(mins) {
+        let tiempo = mins * 60;
+        const display = document.getElementById('mute-timer');
+        document.getElementById('mute-screen').style.display = 'flex';
+        
+        clearInterval(muteInterval);
+        muteInterval = setInterval(() => {
+            let m = Math.floor(tiempo / 60);
+            let s = tiempo % 60;
+            display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if (--tiempo < 0) {
+                document.getElementById('mute-screen').style.display = 'none';
+                clearInterval(muteInterval);
+            }
+        }, 1000);
+    }
 </script>
 </body>
 </html>
