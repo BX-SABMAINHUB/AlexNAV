@@ -2,122 +2,300 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AlexNAV Pro | Lazarus Client</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexNAV Quantum | Secure Navigation Environment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --accent: #00d4ff; --bg: #030305; --chrome: #121215; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-
-        /* HEADER / BARRA DE BÚSQUEDA */
-        .header { height: 70px; background: var(--chrome); display: flex; align-items: center; padding: 0 20px; gap: 15px; border-bottom: 1px solid #333; }
-        .omnibox { 
-            flex: 1; background: #000; border: 1.5px solid #444; color: white; 
-            padding: 12px 20px; border-radius: 25px; outline: none; font-size: 14px;
+        /* CSS CORE - DISEÑO FUTURISTA LAZARUS */
+        :root {
+            --primary: #00d4ff;
+            --primary-glow: rgba(0, 212, 255, 0.4);
+            --bg-deep: #050507;
+            --bg-surface: #101116;
+            --border: #2a2c33;
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+            --danger: #ff3e3e;
+            --success: #00ff88;
         }
-        .omnibox:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
-        .id-badge { background: rgba(0,212,255,0.1); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; border: 1px solid var(--accent); }
 
-        /* VIEWPORT */
-        .viewport { width: 100%; height: calc(100vh - 70px); background: white; }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        /* BLOQUEO ESTILO IMTGO */
-        #imtgo-block {
-            position: fixed; inset: 0; background: #f0f4f8; display: none;
-            flex-direction: column; align-items: center; justify-content: center; z-index: 10000;
+        * { box-sizing: border-box; outline: none; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        body, html {
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            background: var(--bg-deep); color: var(--text-main);
+            font-family: 'Inter', sans-serif; overflow: hidden;
         }
-        .block-card { background: white; padding: 50px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; border-top: 10px solid #2b6cb0; }
+
+        /* BARRA DE HERRAMIENTAS - OMNIBOX */
+        .browser-chrome {
+            height: 85px; background: var(--bg-surface);
+            display: flex; align-items: center; padding: 0 30px;
+            gap: 20px; border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; z-index: 1000;
+        }
+
+        .nav-controls { display: flex; gap: 12px; }
+        .control-btn {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: #1a1c23; border: 1px solid var(--border);
+            color: var(--text-main); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .control-btn:hover {
+            border-color: var(--primary); color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow); transform: translateY(-2px);
+        }
+
+        .search-container { flex: 1; position: relative; max-width: 900px; margin: 0 auto; }
+        .omnibox {
+            width: 100%; height: 48px; background: #000;
+            border: 2px solid var(--border); border-radius: 14px;
+            padding: 0 55px 0 25px; color: #fff; font-family: 'JetBrains Mono', monospace;
+            font-size: 14px; letter-spacing: 0.5px;
+        }
+        .omnibox:focus {
+            border-color: var(--primary); background: #08080a;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.15);
+        }
+
+        .search-icon {
+            position: absolute; right: 20px; top: 50%;
+            transform: translateY(-50%); color: var(--text-dim);
+        }
+
+        .user-identity {
+            display: flex; align-items: center; gap: 15px;
+            background: rgba(255,255,255,0.03); padding: 8px 16px;
+            border-radius: 12px; border: 1px solid var(--border);
+        }
+        .id-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
+        .id-value { font-family: 'JetBrains Mono'; color: var(--primary); font-weight: bold; }
+
+        /* VISOR DE CONTENIDO */
+        .viewport-container {
+            width: 100%; height: calc(100vh - 85px);
+            background: #fff; position: relative;
+        }
+        #browser-frame { width: 100%; height: 100%; border: none; }
+
+        /* PANTALLA DE BLOQUEO IMTGO (REDES CORPORATIVAS) */
+        #imtgo-lock {
+            position: fixed; inset: 0; background: #fdfdfe;
+            z-index: 99999; display: none; align-items: center; justify-content: center;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        .lock-content {
+            text-align: center; max-width: 600px; padding: 60px;
+            background: white; border-radius: 30px; border-top: 12px solid #2b6cb0;
+            box-shadow: 0 30px 100px rgba(0,0,0,0.08);
+        }
+        .lock-logo { color: #e53e3e; font-size: 120px; margin-bottom: 30px; }
+        .lock-title { color: #1a365d; font-size: 38px; margin: 0; font-weight: 800; }
+        .lock-desc { color: #4a5568; font-size: 18px; line-height: 1.6; margin-top: 20px; }
+
+        /* CARGADOR */
+        #loader {
+            position: absolute; bottom: 2px; left: 0; height: 3px;
+            background: var(--primary); width: 0%; z-index: 2000;
+        }
     </style>
 </head>
 <body>
 
-<div id="imtgo-block">
-    <div class="block-card">
-        <i class="fas fa-times-circle" style="color:#e53e3e; font-size:100px; margin-bottom:20px;"></i>
-        <h1 style="color:#1a365d; margin:0;">ACCESO DENEGADO</h1>
-        <p style="color:#4a5568; font-size:18px;">Este sitio ha sido restringido por seguridad corporativa.</p>
+<div id="loader"></div>
+
+<div id="imtgo-lock">
+    <div class="lock-content">
+        <i class="fas fa-circle-xmark lock-logo"></i>
+        <h1 class="lock-title">ACCESO DENEGADO</h1>
+        <p class="lock-desc">
+            El sistema de protección <b>IMTGo</b> ha interceptado esta solicitud.<br>
+            Este dominio está clasificado como <b>No Autorizado</b> por el administrador AlexNAV.
+        </p>
+        <button onclick="window.location.reload()" style="margin-top:30px; padding:12px 30px; background:#2b6cb0; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">SOLICITAR ACCESO</button>
     </div>
 </div>
 
-<header class="header">
-    <div class="id-badge" id="display-id">ID: ...</div>
-    <input type="text" id="omni" class="omnibox" placeholder="Escribe una URL o busca en la red privada...">
-    <button onclick="navigate()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:20px; cursor:pointer; font-weight:bold;">IR</button>
+<header class="browser-chrome">
+    <div class="nav-controls">
+        <button class="control-btn" title="Atrás" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+        <button class="control-btn" title="Recargar" onclick="location.reload()"><i class="fas fa-rotate-right"></i></button>
+        <button class="control-btn" title="Inicio" onclick="goHome()"><i class="fas fa-house"></i></button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="omni-input" class="omnibox" placeholder="Introduce una URL o realiza una búsqueda privada segura...">
+        <i class="fas fa-shield-halved search-icon"></i>
+    </div>
+
+    <div class="user-identity">
+        <div>
+            <div class="id-label">Terminal ID</div>
+            <div class="id-value" id="node-id">SYNCING...</div>
+        </div>
+        <i class="fas fa-fingerprint" style="font-size: 24px; color: var(--primary);"></i>
+    </div>
 </header>
 
-<div class="viewport">
-    <iframe id="main-frame" src="https://start.duckduckgo.com"></iframe>
-</div>
+<main class="viewport-container">
+    <iframe id="browser-frame" src="about:blank"></iframe>
+</main>
 
 <script>
-    const SB_URL = "https://gmvczheriaqouwynfdyv.supabase.co";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs";
+    /**
+     * ALEXNAV CORE ENGINE V5.0
+     * Gestiona: Conexión Supabase, Búsqueda Privada, Latido de Vigilancia.
+     */
 
-    // --- ID ÚNICO Y PERSISTENTE ---
-    let USER_ID = localStorage.getItem('lazarus_user_id');
-    if(!USER_ID) {
-        USER_ID = "NODE-" + Math.floor(Math.random() * 9000 + 1000);
-        localStorage.setItem('lazarus_user_id', USER_ID);
-    }
-    document.getElementById('display-id').innerText = "ID: " + USER_ID;
+    const SB_CONFIG = {
+        URL: "https://gmvczheriaqouwynfdyv.supabase.co",
+        KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs",
+        TABLE_LOGS: "logs",
+        TABLE_CMD: "ordenes",
+        TABLE_BLOCKS: "links_bloqueados"
+    };
 
-    // --- NAVEGACIÓN PRIVADA (TIPO STARTPAGE) ---
-    async function navigate() {
-        const query = document.getElementById('omni').value.trim();
-        if(!query) return;
+    // 1. GESTIÓN DE IDENTIDAD (Persistence Layer)
+    const getTerminalID = () => {
+        let id = localStorage.getItem('alex_nav_token');
+        if (!id) {
+            id = "NODE-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+            localStorage.setItem('alex_nav_token', id);
+        }
+        // Sincronizar con URL para el panel
+        const url = new URL(window.location);
+        url.searchParams.set('id', id);
+        window.history.replaceState({}, '', url);
+        return id;
+    };
 
-        // Comprobar Bloqueos
-        const res = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}});
-        const list = await res.json();
-        if(list.some(l => query.toLowerCase().includes(l.url.toLowerCase()))) {
-            document.getElementById('imtgo-block').style.display = 'flex';
-            sendReport("BLOQUEO", query);
+    const TERMINAL_ID = getTerminalID();
+    document.getElementById('node-id').innerText = TERMINAL_ID;
+
+    // 2. MOTOR DE NAVEGACIÓN Y BÚSQUEDA PRIVADA
+    const input = document.getElementById('omni-input');
+    const frame = document.getElementById('browser-frame');
+
+    async function executeNavigation() {
+        const rawInput = input.value.trim();
+        if (!rawInput) return;
+
+        animateLoader();
+
+        // Verificación de Seguridad contra Blacklist
+        const isBlocked = await checkSecurity(rawInput);
+        if (isBlocked) {
+            showBlockScreen();
+            await logActivity("INTERCEPTADO", rawInput);
             return;
         }
 
-        document.getElementById('imtgo-block').style.display = 'none';
-        let finalUrl = "";
-        
-        if (query.includes('.') && !query.includes(' ')) {
-            finalUrl = query.startsWith('http') ? query : 'https://' + query;
+        document.getElementById('imtgo-lock').style.display = 'none';
+
+        let targetUrl = "";
+        // Lógica de detección: ¿Es URL o es Búsqueda?
+        if (rawInput.includes('.') && !rawInput.includes(' ')) {
+            targetUrl = rawInput.startsWith('http') ? rawInput : 'https://' + rawInput;
         } else {
-            // Buscador Privado ( DuckDuckGo modo limpio )
-            finalUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&kae=d&kp=-2`;
+            /** * MOTOR DE BÚSQUEDA PRIVADO (TIPO STARTPAGE / DUCKDUCKGO)
+             * Usamos DuckDuckGo en modo 'No-Logo' y 'No-JS' para máxima limpieza
+             */
+            targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(rawInput)}&kae=d&kp=-2&k1=-1&k4=-1`;
         }
 
-        document.getElementById('main-frame').src = finalUrl;
-        sendReport("NAV", finalUrl);
+        frame.src = targetUrl;
+        await logActivity("NAVEGACIÓN", targetUrl);
     }
 
-    document.getElementById('omni').onkeypress = (e) => { if(e.key === 'Enter') navigate(); };
+    // 3. PROTOCOLO DE VIGILANCIA FORZADA (El "Latido")
+    async function logActivity(action, detail) {
+        try {
+            const payload = {
+                usuario_id: TERMINAL_ID,
+                accion: action,
+                contenido: detail,
+                url_actual: frame.src || "Inicio",
+                timestamp: new Date().toISOString()
+            };
 
-    // --- SISTEMA DE DETECCIÓN (HEARTBEAT) ---
-    async function sendReport(action, val) {
-        fetch(`${SB_URL}/rest/v1/logs`, {
-            method: 'POST',
-            headers: {'apikey': SB_KEY, 'Content-Type': 'application/json'},
-            body: JSON.stringify({ 
-                usuario_id: USER_ID, 
-                accion: action, 
-                contenido: val, 
-                url_actual: document.getElementById('main-frame').src,
-                last_seen: new Date().toISOString()
-            })
-        });
-    }
+            const response = await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_LOGS}`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SB_CONFIG.KEY,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify(payload)
+            });
 
-    // Manda una señal cada 5 segundos para que el panel sepa que estás conectado
-    setInterval(() => sendReport("PING", "Activo"), 5000);
-
-    // Órdenes remotas
-    setInterval(async () => {
-        const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${USER_ID}&activa=eq.true`, {headers:{'apikey':SB_KEY}});
-        const data = await res.json();
-        if(data.length > 0) {
-            if(data[0].orden === 'BAN') document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%;'>DISPOSITIVO BLOQUEADO</h1>";
-            if(data[0].orden === 'GOTO') document.getElementById('main-frame').src = data[0].contenido;
+            if(!response.ok) throw new Error("Sync Fail");
+            console.log("✔ Señal enviada al Hub Lazarus");
+        } catch (e) {
+            console.error("✘ Fallo de detección:", e);
         }
-    }, 3000);
+    }
+
+    // Enviar un latido cada 4 segundos para que el panel no pierda la conexión
+    setInterval(() => logActivity("HEARTBEAT", "Keep-Alive"), 4000);
+
+    async function checkSecurity(query) {
+        try {
+            const res = await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_BLOCKS}?select=url`, {
+                headers: { 'apikey': SB_CONFIG.KEY }
+            });
+            const list = await res.json();
+            return list.some(item => query.toLowerCase().includes(item.url.toLowerCase()));
+        } catch (e) { return false; }
+    }
+
+    // 4. CONTROLADOR DE ÓRDENES REMOTAS
+    async function listenRemoteCommands() {
+        try {
+            const res = await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_CMD}?usuario_id=eq.${TERMINAL_ID}&activa=eq.true`, {
+                headers: { 'apikey': SB_CONFIG.KEY }
+            });
+            const commands = await res.json();
+            
+            if (commands.length > 0) {
+                const cmd = commands[0];
+                handleCommand(cmd);
+                // Desactivar orden tras ejecutar
+                await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_CMD}?id=eq.${cmd.id}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SB_CONFIG.KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activa: false })
+                });
+            }
+        } catch (e) {}
+    }
+
+    function handleCommand(c) {
+        if (c.orden === 'BAN') document.body.innerHTML = "<div style='background:black; color:red; height:100vh; display:flex; align-items:center; justify-content:center; font-family:monospace;'><h1>ACCESO TERMINADO POR EL ADMINISTRADOR</h1></div>";
+        if (c.orden === 'GOTO') { frame.src = c.contenido; input.value = c.contenido; }
+        if (c.orden === 'RELOAD') location.reload();
+    }
+
+    setInterval(listenRemoteCommands, 2500);
+
+    // EVENTOS DE INTERFAZ
+    input.addEventListener('keypress', (e) => { if(e.key === 'Enter') executeNavigation(); });
+    function showBlockScreen() { document.getElementById('imtgo-lock').style.display = 'flex'; }
+    function goHome() { frame.src = "https://duckduckgo.com/?kae=d"; input.value = ""; }
+    function animateLoader() {
+        const l = document.getElementById('loader');
+        l.style.width = '0%';
+        setTimeout(() => l.style.width = '100%', 50);
+        setTimeout(() => l.style.width = '0%', 1500);
+    }
+
+    // Primer latido al entrar
+    window.onload = () => {
+        logActivity("CONEXIÓN", "Terminal Inicializada");
+        goHome();
+    };
 </script>
 </body>
 </html>
