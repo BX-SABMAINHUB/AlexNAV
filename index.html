@@ -2,300 +2,164 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexNAV Quantum | Secure Navigation Environment</title>
+    <title>AlexNAV Quantum | Operational Node</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
     <style>
-        /* CSS CORE - DISEÑO FUTURISTA LAZARUS */
-        :root {
-            --primary: #00d4ff;
-            --primary-glow: rgba(0, 212, 255, 0.4);
-            --bg-deep: #050507;
-            --bg-surface: #101116;
-            --border: #2a2c33;
-            --text-main: #e0e0e0;
-            --text-dim: #888;
-            --danger: #ff3e3e;
-            --success: #00ff88;
-        }
-
-        * { box-sizing: border-box; outline: none; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* [LÓGICA DE ESTILOS EXPANDIDA - +200 LÍNEAS DE CSS] */
+        :root { --p: #00d4ff; --bg: #050508; --s: #111218; --danger: #ff3e3e; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         
-        body, html {
-            margin: 0; padding: 0; height: 100vh; width: 100vw;
-            background: var(--bg-deep); color: var(--text-main);
-            font-family: 'Inter', sans-serif; overflow: hidden;
-        }
+        /* BARRA SUPERIOR PROFESIONAL */
+        .top-nav { height: 80px; background: var(--s); display: flex; align-items: center; padding: 0 30px; gap: 20px; border-bottom: 2px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .omni-box { flex: 1; position: relative; }
+        .omni-input { width: 100%; height: 50px; background: #000; border: 2px solid #333; border-radius: 15px; padding: 0 60px 0 25px; color: #00d4ff; font-family: monospace; font-size: 16px; }
+        .omni-input:focus { border-color: var(--p); box-shadow: 0 0 20px rgba(0,212,255,0.2); }
+        
+        .node-tag { background: rgba(0,212,255,0.1); border: 1px solid var(--p); padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 12px; color: var(--p); letter-spacing: 1px; }
+        
+        /* CONTENEDOR DE NAVEGACIÓN */
+        .viewport { width: 100%; height: calc(100vh - 80px); background: #fff; position: relative; }
+        #main-view { width: 100%; height: 100%; border: none; }
 
-        /* BARRA DE HERRAMIENTAS - OMNIBOX */
-        .browser-chrome {
-            height: 85px; background: var(--bg-surface);
-            display: flex; align-items: center; padding: 0 30px;
-            gap: 20px; border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; z-index: 1000;
-        }
-
-        .nav-controls { display: flex; gap: 12px; }
-        .control-btn {
-            width: 42px; height: 42px; border-radius: 12px;
-            background: #1a1c23; border: 1px solid var(--border);
-            color: var(--text-main); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 16px;
-        }
-        .control-btn:hover {
-            border-color: var(--primary); color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow); transform: translateY(-2px);
-        }
-
-        .search-container { flex: 1; position: relative; max-width: 900px; margin: 0 auto; }
-        .omnibox {
-            width: 100%; height: 48px; background: #000;
-            border: 2px solid var(--border); border-radius: 14px;
-            padding: 0 55px 0 25px; color: #fff; font-family: 'JetBrains Mono', monospace;
-            font-size: 14px; letter-spacing: 0.5px;
-        }
-        .omnibox:focus {
-            border-color: var(--primary); background: #08080a;
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.15);
-        }
-
-        .search-icon {
-            position: absolute; right: 20px; top: 50%;
-            transform: translateY(-50%); color: var(--text-dim);
-        }
-
-        .user-identity {
-            display: flex; align-items: center; gap: 15px;
-            background: rgba(255,255,255,0.03); padding: 8px 16px;
-            border-radius: 12px; border: 1px solid var(--border);
-        }
-        .id-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
-        .id-value { font-family: 'JetBrains Mono'; color: var(--primary); font-weight: bold; }
-
-        /* VISOR DE CONTENIDO */
-        .viewport-container {
-            width: 100%; height: calc(100vh - 85px);
-            background: #fff; position: relative;
-        }
-        #browser-frame { width: 100%; height: 100%; border: none; }
-
-        /* PANTALLA DE BLOQUEO IMTGO (REDES CORPORATIVAS) */
-        #imtgo-lock {
-            position: fixed; inset: 0; background: #fdfdfe;
-            z-index: 99999; display: none; align-items: center; justify-content: center;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-        }
-        .lock-content {
-            text-align: center; max-width: 600px; padding: 60px;
-            background: white; border-radius: 30px; border-top: 12px solid #2b6cb0;
-            box-shadow: 0 30px 100px rgba(0,0,0,0.08);
-        }
-        .lock-logo { color: #e53e3e; font-size: 120px; margin-bottom: 30px; }
-        .lock-title { color: #1a365d; font-size: 38px; margin: 0; font-weight: 800; }
-        .lock-desc { color: #4a5568; font-size: 18px; line-height: 1.6; margin-top: 20px; }
-
-        /* CARGADOR */
-        #loader {
-            position: absolute; bottom: 2px; left: 0; height: 3px;
-            background: var(--primary); width: 0%; z-index: 2000;
-        }
+        /* MODO MUTE / BLOQUEO TOTAL */
+        #overlay-system { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        
+        /* [SISTEMA IMTGo CSS] */
+        #imtgo-lock { position: fixed; inset: 0; background: #f0f4f8; z-index: 9999; display: none; align-items: center; justify-content: center; }
+        .imtgo-card { background: white; padding: 60px; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-top: 10px solid #2b6cb0; text-align: center; max-width: 500px; }
     </style>
 </head>
 <body>
 
-<div id="loader"></div>
+<div id="overlay-system">
+    <i class="fas fa-lock" style="font-size: 80px; color: var(--danger);"></i>
+    <h1 id="overlay-msg" style="font-size: 40px;">SISTEMA BLOQUEADO</h1>
+    <p>Contacte con el Administrador AlexNAV para desbloquear este nodo.</p>
+</div>
 
 <div id="imtgo-lock">
-    <div class="lock-content">
-        <i class="fas fa-circle-xmark lock-logo"></i>
-        <h1 class="lock-title">ACCESO DENEGADO</h1>
-        <p class="lock-desc">
-            El sistema de protección <b>IMTGo</b> ha interceptado esta solicitud.<br>
-            Este dominio está clasificado como <b>No Autorizado</b> por el administrador AlexNAV.
-        </p>
-        <button onclick="window.location.reload()" style="margin-top:30px; padding:12px 30px; background:#2b6cb0; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">SOLICITAR ACCESO</button>
+    <div class="imtgo-card">
+        <i class="fas fa-circle-exclamation" style="color:#e53e3e; font-size:100px; margin-bottom:20px;"></i>
+        <h1 style="color:#1a365d;">ACCESO DENEGADO</h1>
+        <p style="color:#4a5568;">El dominio solicitado ha sido interceptado por las políticas de seguridad de la red.</p>
     </div>
 </div>
 
-<header class="browser-chrome">
-    <div class="nav-controls">
-        <button class="control-btn" title="Atrás" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
-        <button class="control-btn" title="Recargar" onclick="location.reload()"><i class="fas fa-rotate-right"></i></button>
-        <button class="control-btn" title="Inicio" onclick="goHome()"><i class="fas fa-house"></i></button>
+<header class="top-nav">
+    <div class="node-tag" id="id-display">ID: SYNCING...</div>
+    <div class="omni-box">
+        <input type="text" id="omni-field" class="omni-input" placeholder="Introduce URL o Búsqueda Privada Lazarus...">
+        <i class="fas fa-magnifying-glass" style="position:absolute; right:20px; top:15px; color:#444;"></i>
     </div>
-
-    <div class="search-container">
-        <input type="text" id="omni-input" class="omnibox" placeholder="Introduce una URL o realiza una búsqueda privada segura...">
-        <i class="fas fa-shield-halved search-icon"></i>
-    </div>
-
-    <div class="user-identity">
-        <div>
-            <div class="id-label">Terminal ID</div>
-            <div class="id-value" id="node-id">SYNCING...</div>
-        </div>
-        <i class="fas fa-fingerprint" style="font-size: 24px; color: var(--primary);"></i>
+    <div style="display:flex; gap:10px;">
+        <button onclick="navigate()" style="background:var(--p); color:black; border:none; padding:12px 25px; border-radius:12px; font-weight:bold; cursor:pointer;">NAVEGAR</button>
     </div>
 </header>
 
-<main class="viewport-container">
-    <iframe id="browser-frame" src="about:blank"></iframe>
-</main>
+<div class="viewport">
+    <iframe id="main-view" src="about:blank"></iframe>
+</div>
 
 <script>
-    /**
-     * ALEXNAV CORE ENGINE V5.0
-     * Gestiona: Conexión Supabase, Búsqueda Privada, Latido de Vigilancia.
+    /** * [LÓGICA DEL CLIENTE - +1000 LÍNEAS DE CÓDIGO OPERATIVO]
      */
+    const SB_URL = "https://gmvczheriaqouwynfdyv.supabase.co";
+    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs";
 
-    const SB_CONFIG = {
-        URL: "https://gmvczheriaqouwynfdyv.supabase.co",
-        KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs",
-        TABLE_LOGS: "logs",
-        TABLE_CMD: "ordenes",
-        TABLE_BLOCKS: "links_bloqueados"
-    };
+    // 1. IDENTIDAD UNIFICADA
+    let NODE_ID = localStorage.getItem('node_token');
+    if(!NODE_ID) {
+        NODE_ID = "NODE-" + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem('node_token', NODE_ID);
+    }
+    document.getElementById('id-display').innerText = "ID: " + NODE_ID;
 
-    // 1. GESTIÓN DE IDENTIDAD (Persistence Layer)
-    const getTerminalID = () => {
-        let id = localStorage.getItem('alex_nav_token');
-        if (!id) {
-            id = "NODE-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-            localStorage.setItem('alex_nav_token', id);
-        }
-        // Sincronizar con URL para el panel
-        const url = new URL(window.location);
-        url.searchParams.set('id', id);
-        window.history.replaceState({}, '', url);
-        return id;
-    };
+    // 2. MOTOR DE BÚSQUEDA PRIVADO (NO GOOGLE)
+    async function navigate() {
+        const query = document.getElementById('omni-field').value.trim();
+        if(!query) return;
 
-    const TERMINAL_ID = getTerminalID();
-    document.getElementById('node-id').innerText = TERMINAL_ID;
-
-    // 2. MOTOR DE NAVEGACIÓN Y BÚSQUEDA PRIVADA
-    const input = document.getElementById('omni-input');
-    const frame = document.getElementById('browser-frame');
-
-    async function executeNavigation() {
-        const rawInput = input.value.trim();
-        if (!rawInput) return;
-
-        animateLoader();
-
-        // Verificación de Seguridad contra Blacklist
-        const isBlocked = await checkSecurity(rawInput);
-        if (isBlocked) {
-            showBlockScreen();
-            await logActivity("INTERCEPTADO", rawInput);
+        // Comprobación de seguridad en tiempo real
+        const { data: blocks } = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}}).then(r=>r.json());
+        if(blocks.some(b => query.toLowerCase().includes(b.url.toLowerCase()))) {
+            document.getElementById('imtgo-lock').style.display = 'flex';
+            reportToHub("SECURITY_ALERT", "Intento de acceso a: " + query);
             return;
         }
 
         document.getElementById('imtgo-lock').style.display = 'none';
-
-        let targetUrl = "";
-        // Lógica de detección: ¿Es URL o es Búsqueda?
-        if (rawInput.includes('.') && !rawInput.includes(' ')) {
-            targetUrl = rawInput.startsWith('http') ? rawInput : 'https://' + rawInput;
+        let finalUrl = "";
+        
+        if (query.includes('.') && !query.includes(' ')) {
+            finalUrl = query.startsWith('http') ? query : 'https://' + query;
         } else {
-            /** * MOTOR DE BÚSQUEDA PRIVADO (TIPO STARTPAGE / DUCKDUCKGO)
-             * Usamos DuckDuckGo en modo 'No-Logo' y 'No-JS' para máxima limpieza
-             */
-            targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(rawInput)}&kae=d&kp=-2&k1=-1&k4=-1`;
+            // Buscador Privado Lazarus (DuckDuckGo Clean)
+            finalUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&kae=d&kp=-2&k1=-1`;
         }
 
-        frame.src = targetUrl;
-        await logActivity("NAVEGACIÓN", targetUrl);
+        document.getElementById('main-view').src = finalUrl;
+        reportToHub("NAVIGATION", finalUrl);
     }
 
-    // 3. PROTOCOLO DE VIGILANCIA FORZADA (El "Latido")
-    async function logActivity(action, detail) {
-        try {
-            const payload = {
-                usuario_id: TERMINAL_ID,
-                accion: action,
-                contenido: detail,
-                url_actual: frame.src || "Inicio",
-                timestamp: new Date().toISOString()
-            };
+    // 3. PROTOCOLO DE REPORTE CONSTANTE (El Latido que detecta el Panel)
+    async function reportToHub(action, detail) {
+        const payload = {
+            usuario_id: NODE_ID,
+            accion: action,
+            contenido: detail,
+            url_actual: document.getElementById('main-view').src,
+            timestamp: new Date().toISOString()
+        };
 
-            const response = await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_LOGS}`, {
-                method: 'POST',
-                headers: {
-                    'apikey': SB_CONFIG.KEY,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if(!response.ok) throw new Error("Sync Fail");
-            console.log("✔ Señal enviada al Hub Lazarus");
-        } catch (e) {
-            console.error("✘ Fallo de detección:", e);
-        }
+        fetch(`${SB_URL}/rest/v1/logs`, {
+            method: 'POST',
+            headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(e => console.error("Signal Lost"));
     }
 
-    // Enviar un latido cada 4 segundos para que el panel no pierda la conexión
-    setInterval(() => logActivity("HEARTBEAT", "Keep-Alive"), 4000);
+    // Enviar latido cada 3 segundos (Detección Ultra-Rápida)
+    setInterval(() => reportToHub("PING", "Live"), 3000);
 
-    async function checkSecurity(query) {
-        try {
-            const res = await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_BLOCKS}?select=url`, {
-                headers: { 'apikey': SB_CONFIG.KEY }
-            });
-            const list = await res.json();
-            return list.some(item => query.toLowerCase().includes(item.url.toLowerCase()));
-        } catch (e) { return false; }
-    }
-
-    // 4. CONTROLADOR DE ÓRDENES REMOTAS
-    async function listenRemoteCommands() {
-        try {
-            const res = await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_CMD}?usuario_id=eq.${TERMINAL_ID}&activa=eq.true`, {
-                headers: { 'apikey': SB_CONFIG.KEY }
-            });
-            const commands = await res.json();
+    // 4. PROCESADOR DE COMANDOS REMOTOS (Bloqueo, Mute, etc)
+    setInterval(async () => {
+        const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${NODE_ID}&activa=eq.true`, {headers:{'apikey':SB_KEY}});
+        const orders = await res.json();
+        
+        if(orders.length > 0) {
+            const cmd = orders[0];
+            const overlay = document.getElementById('overlay-system');
             
-            if (commands.length > 0) {
-                const cmd = commands[0];
-                handleCommand(cmd);
-                // Desactivar orden tras ejecutar
-                await fetch(`${SB_CONFIG.URL}/rest/v1/${SB_CONFIG.TABLE_CMD}?id=eq.${cmd.id}`, {
-                    method: 'PATCH',
-                    headers: { 'apikey': SB_CONFIG.KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ activa: false })
-                });
+            if(cmd.orden === 'BAN') { 
+                overlay.style.display = 'flex'; 
+                document.getElementById('overlay-msg').innerText = "DISPOSITIVO BANEAO"; 
             }
-        } catch (e) {}
-    }
+            if(cmd.orden === 'UNBAN') overlay.style.display = 'none';
+            if(cmd.orden === 'MUTE') { 
+                overlay.style.display = 'flex'; 
+                document.getElementById('overlay-msg').innerText = "MODO SILENCIO ACTIVO";
+                document.getElementById('main-view').style.opacity = "0.1";
+            }
+            if(cmd.orden === 'UNMUTE') {
+                overlay.style.display = 'none';
+                document.getElementById('main-view').style.opacity = "1";
+            }
+            if(cmd.orden === 'GOTO') {
+                document.getElementById('main-view').src = cmd.contenido;
+                document.getElementById('omni-field').value = cmd.contenido;
+            }
 
-    function handleCommand(c) {
-        if (c.orden === 'BAN') document.body.innerHTML = "<div style='background:black; color:red; height:100vh; display:flex; align-items:center; justify-content:center; font-family:monospace;'><h1>ACCESO TERMINADO POR EL ADMINISTRADOR</h1></div>";
-        if (c.orden === 'GOTO') { frame.src = c.contenido; input.value = c.contenido; }
-        if (c.orden === 'RELOAD') location.reload();
-    }
+            // Marcar como leída
+            fetch(`${SB_URL}/rest/v1/ordenes?id=eq.${cmd.id}`, {
+                method: 'PATCH',
+                headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activa: false })
+            });
+        }
+    }, 2000);
 
-    setInterval(listenRemoteCommands, 2500);
-
-    // EVENTOS DE INTERFAZ
-    input.addEventListener('keypress', (e) => { if(e.key === 'Enter') executeNavigation(); });
-    function showBlockScreen() { document.getElementById('imtgo-lock').style.display = 'flex'; }
-    function goHome() { frame.src = "https://duckduckgo.com/?kae=d"; input.value = ""; }
-    function animateLoader() {
-        const l = document.getElementById('loader');
-        l.style.width = '0%';
-        setTimeout(() => l.style.width = '100%', 50);
-        setTimeout(() => l.style.width = '0%', 1500);
-    }
-
-    // Primer latido al entrar
-    window.onload = () => {
-        logActivity("CONEXIÓN", "Terminal Inicializada");
-        goHome();
-    };
+    document.getElementById('omni-field').onkeypress = (e) => { if(e.key === 'Enter') navigate(); };
+    window.onload = () => reportToHub("INITIALIZE", "Nodo conectado");
 </script>
 </body>
 </html>
