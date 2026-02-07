@@ -2,119 +2,149 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AlexNAV Pro | Lazarus Client</title>
+    <title>AlexNAV Quantum | Ultra Stable</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --accent: #00d4ff; --bg: #030305; --chrome: #121215; }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* HEADER */
-        .header { height: 70px; background: var(--chrome); display: flex; align-items: center; padding: 0 20px; gap: 15px; border-bottom: 1px solid #333; }
-        .omnibox { flex: 1; background: #000; border: 1px solid #444; color: white; padding: 12px 20px; border-radius: 25px; outline: none; }
-        .id-label { background: #222; padding: 5px 12px; border-radius: 5px; font-size: 12px; color: var(--accent); font-weight: bold; border: 1px solid var(--accent); }
+        /* INTERFAZ PREMIUM */
+        .header { height: 75px; background: var(--chrome); display: flex; align-items: center; padding: 0 25px; gap: 20px; border-bottom: 1px solid #333; }
+        .omni-container { flex: 1; position: relative; }
+        .omnibox { 
+            width: 100%; background: #000; border: 2px solid #333; color: white; 
+            padding: 14px 25px; border-radius: 30px; outline: none; font-size: 15px;
+            transition: 0.3s;
+        }
+        .omnibox:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
+        
+        .id-label { 
+            background: rgba(0, 212, 255, 0.1); border: 1px solid var(--accent); 
+            color: var(--accent); padding: 8px 15px; border-radius: 10px; 
+            font-size: 12px; font-weight: 900; letter-spacing: 1px;
+        }
 
         /* VIEWPORT */
-        .content { width: 100%; height: calc(100vh - 70px); background: white; }
+        .view-main { width: 100%; height: calc(100vh - 75px); background: white; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* BLOQUEO ESTILO IMTGO (Blanco y Azul) */
+        /* BLOQUEO ESTILO IMTGO */
         #imtgo-block {
             position: fixed; inset: 0; background: #f0f4f8; display: none;
             flex-direction: column; align-items: center; justify-content: center; z-index: 1000000;
-            font-family: 'Arial', sans-serif; color: #1a365d;
         }
-        .x-logo { color: #e53e3e; font-size: 120px; margin-bottom: 20px; }
-        .block-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border-top: 8px solid #2b6cb0; }
-
-        /* OTROS BLOQUEOS */
-        .overlay { position: fixed; inset: 0; display: none; z-index: 999999; }
-        #ban-overlay { background: rgba(0,0,0,0.9); color: red; flex-direction: column; align-items: center; justify-content: center; }
+        .block-card { 
+            background: white; padding: 50px; border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; 
+            border-top: 10px solid #2b6cb0; max-width: 500px;
+        }
     </style>
 </head>
 <body>
 
 <div id="imtgo-block">
     <div class="block-card">
-        <div class="x-logo"><i class="fas fa-times-circle"></i></div>
-        <h1 style="margin:0; font-size: 32px;">ACCESO DENEGADO</h1>
-        <p style="font-size: 18px; color: #4a5568;">El contenido al que intenta acceder ha sido restringido.</p>
-        <div style="margin-top:20px; font-weight: bold; color: #2b6cb0;">SEGURIDAD LAZARUS - ALEXNAV</div>
+        <i class="fas fa-times-circle" style="color: #e53e3e; font-size: 100px; margin-bottom: 25px;"></i>
+        <h1 style="color: #1a365d; margin: 0;">ACCESO DENEGADO</h1>
+        <p style="color: #4a5568; font-size: 18px;">Este sitio ha sido bloqueado por las políticas de seguridad de AlexNAV.</p>
     </div>
 </div>
 
-<div id="ban-overlay" class="overlay">
-    <h1 style="font-size: 4rem;">SISTEMA BLOQUEADO</h1>
-</div>
-
 <header class="header">
-    <div id="id-display" class="id-label">ID: ---</div>
-    <input type="text" id="omni" class="omnibox" placeholder="Introduce una URL o busca en Google...">
-    <button onclick="navigate()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:20px; cursor:pointer;">IR</button>
+    <div class="id-label" id="display-id">ID: CARGANDO...</div>
+    <div class="omni-container">
+        <input type="text" id="omni-input" class="omnibox" placeholder="Introduce una URL o busca en Google...">
+    </div>
+    <button onclick="ejecutarNav()" style="background:var(--accent); border:none; padding:12px 25px; border-radius:25px; font-weight:bold; cursor:pointer;">NAVEGAR</button>
 </header>
 
-<div class="content">
-    <iframe id="main-frame" src="https://www.google.com/search?igu=1"></iframe>
+<div class="view-main">
+    <iframe id="browser-frame" src="https://www.google.com/search?igu=1"></iframe>
 </div>
 
 <script>
     const SB_URL = "https://gmvczheriaqouwynfdyv.supabase.co";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdmN6aGVyaWFxb3V3eW5mZHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTM1OTQsImV4cCI6MjA4NTk4OTU5NH0.22wbgR33dCQ1vfB_EdWpxGY5w811_jsf1dqbU1P6dQs";
+    const SB_KEY = "tu_key_aqui";
 
-    // GENERAR ID ÚNICO SI NO EXISTE EN URL
-    const params = new URLSearchParams(window.location.search);
-    let myID = params.get('id');
-    if (!myID) {
-        myID = "USER-" + Math.random().toString(36).substr(2, 4).toUpperCase();
-        window.history.pushState({}, '', '?id=' + myID);
+    // --- LÓGICA DE ID PERSISTENTE (EVITA MULTIPLICACIÓN) ---
+    function obtenerID() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let id = urlParams.get('id');
+        
+        if (!id) {
+            // Si no está en la URL, mira si lo guardamos antes en el navegador
+            id = localStorage.getItem('alexnav_id');
+            if (!id) {
+                id = "ALEX-" + Math.floor(Math.random() * 9000 + 1000);
+                localStorage.setItem('alexnav_id', id);
+            }
+            // Forzar el ID en la URL para que siempre coincida
+            const nuevaUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + id;
+            window.history.pushState({path: nuevaUrl}, '', nuevaUrl);
+        }
+        return id;
     }
-    document.getElementById('id-display').innerText = "ID: " + myID;
 
-    async function navigate() {
-        const input = document.getElementById('omni');
-        const query = input.value.trim();
+    const MI_ID = obtenerID();
+    document.getElementById('display-id').innerText = "ID: " + MI_ID;
+
+    // --- ARREGLO DE LA BARRA DE BÚSQUEDA (OMNIBOX) ---
+    async function ejecutarNav() {
+        const bar = document.getElementById('omni-input');
+        const query = bar.value.trim();
         if (!query) return;
 
-        // Comprobar Links Bloqueados
-        const { data: list } = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}}).then(r=>r.json());
-        if (list.some(l => query.toLowerCase().includes(l.url.toLowerCase()))) {
+        // Verificar Bloqueo Lazarus
+        const { data: lista } = await fetch(`${SB_URL}/rest/v1/links_bloqueados?select=url`, {headers:{'apikey':SB_KEY}}).then(r=>r.json());
+        if (lista && lista.some(l => query.toLowerCase().includes(l.url.toLowerCase()))) {
             document.getElementById('imtgo-block').style.display = 'flex';
-            report("BLOQUEO", query);
+            reportar("BLOQUEADO", query);
             return;
         }
 
         document.getElementById('imtgo-block').style.display = 'none';
         
-        // Lógica de búsqueda inteligente
-        let finalUrl = "";
+        let destino = "";
         if (query.includes('.') && !query.includes(' ')) {
-            finalUrl = query.startsWith('http') ? query : 'https://' + query;
+            destino = query.startsWith('http') ? query : 'https://' + query;
         } else {
-            finalUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}&igu=1`;
+            destino = `https://www.google.com/search?q=${encodeURIComponent(query)}&igu=1`;
         }
 
-        document.getElementById('main-frame').src = finalUrl;
-        report("NAV", finalUrl);
+        document.getElementById('browser-frame').src = destino;
+        reportar("NAVEGANDO", destino);
     }
 
-    async function report(acc, val) {
+    // Escuchar la tecla ENTER en la barra
+    document.getElementById('omni-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            ejecutarNav();
+        }
+    });
+
+    async function reportar(accion, val) {
         fetch(`${SB_URL}/rest/v1/logs`, {
             method: 'POST',
             headers: {'apikey': SB_KEY, 'Content-Type': 'application/json'},
-            body: JSON.stringify({ usuario_id: myID, accion: acc, contenido: val, url_actual: document.getElementById('main-frame').src })
+            body: JSON.stringify({ usuario_id: MI_ID, accion: accion, contenido: val, url_actual: document.getElementById('browser-frame').src })
         });
     }
 
-    document.getElementById('omni').onkeypress = (e) => { if(e.key === 'Enter') navigate(); };
-
-    // Comandos remotos
+    // Órdenes del panel
     setInterval(async () => {
-        const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${myID}&activa=eq.true`, {headers:{'apikey':SB_KEY}});
-        const data = await res.json();
-        if (data.length > 0) {
-            if (data[0].orden === 'BAN') document.getElementById('ban-overlay').style.display = 'flex';
-            if (data[0].orden === 'UNBAN') document.getElementById('ban-overlay').style.display = 'none';
-        }
-    }, 2000);
+        try {
+            const res = await fetch(`${SB_URL}/rest/v1/ordenes?usuario_id=eq.${MI_ID}&activa=eq.true`, {headers:{'apikey':SB_KEY}});
+            const ordenes = await res.json();
+            if (ordenes.length > 0) {
+                const cmd = ordenes[0];
+                if (cmd.orden === 'BAN') document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-size:5rem;'>SISTEMA BANEAO POR ALEX</h1>";
+                if (cmd.orden === 'GOTO') {
+                    document.getElementById('browser-frame').src = cmd.contenido;
+                    document.getElementById('omni-input').value = cmd.contenido;
+                }
+            }
+        } catch(e) {}
+    }, 2500);
 </script>
 </body>
 </html>
