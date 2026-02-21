@@ -3,49 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexBrowser Ultimate | Privacy Edition</title>
+    <title>AlexBrowser Ultimate | Premium Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* * ==========================================
-         * NÚCLEO CSS - ALEXBROWSER UI ENGINE v9.0
+         * NÚCLEO CSS - ALEXBROWSER UI ENGINE v10.0 (ULTIMATE)
          * ==========================================
          */
 
         :root {
-            /* PALETA DE COLORES NEON-DARK */
+            /* PALETA DE COLORES NEON-DARK PREMIUM */
             --bg-app: #09090b;
-            --bg-panel: #18181b;
-            --bg-input: #27272a;
-            --accent: #6366f1; /* Indigo Neon */
-            --accent-glow: rgba(99, 102, 241, 0.4);
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --border: #3f3f46;
-            --danger: #ef4444;
-            --success: #10b981;
+            --bg-panel: rgba(24, 24, 27, 0.85);
+            --bg-input: rgba(39, 39, 42, 0.7);
+            --accent: #00f0ff; /* Cyan Neon */
+            --accent-glow: rgba(0, 240, 255, 0.5);
+            --accent-secondary: #7000ff; /* Purple Neon */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(63, 63, 70, 0.5);
+            --danger: #ff0055;
+            --success: #00ff88;
             
             /* DIMENSIONES */
-            --header-height: 80px;
-            --tab-height: 35px;
-            --anim-speed: 0.2s;
+            --header-height: 85px;
+            --tab-height: 38px;
+            --anim-speed: 0.3s;
         }
 
-        /* RESET & BASE */
+        /* RESET & BASE CON FONDO ANIMADO */
         * { box-sizing: border-box; user-select: none; outline: none; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0;
-            background-color: var(--bg-app);
+            background: linear-gradient(-45deg, #09090b, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--text-main);
             font-family: 'Segoe UI', system-ui, sans-serif;
             height: 100vh; overflow: hidden;
             display: flex; flex-direction: column;
         }
 
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         /* SCROLLBAR PERSONALIZADO */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-app); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-secondary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         /* ==========================================
          * ZONA SUPERIOR (HEADER & TABS)
@@ -53,95 +62,116 @@
          */
         .browser-chrome {
             background: var(--bg-panel);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border);
             display: flex; flex-direction: column;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             z-index: 100;
         }
 
         /* BARRA DE PESTAÑAS */
         .tabs-bar {
-            height: 40px;
+            height: 42px;
             display: flex; align-items: flex-end;
-            padding: 0 10px; gap: 5px;
-            background: #000;
+            padding: 0 10px; gap: 6px;
+            background: rgba(0,0,0,0.4);
             overflow-x: auto;
         }
         .tab {
-            background: #222;
-            color: #888;
-            padding: 8px 15px;
-            border-radius: 10px 10px 0 0;
-            font-size: 12px;
+            background: rgba(30, 30, 35, 0.6);
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 12px 12px 0 0;
+            font-size: 13px;
             display: flex; align-items: center; gap: 10px;
             cursor: pointer;
-            transition: var(--anim-speed);
-            max-width: 200px; min-width: 120px;
+            transition: all var(--anim-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 220px; min-width: 130px;
             position: relative;
             border: 1px solid transparent;
+            border-bottom: none;
         }
-        .tab:hover { background: #333; color: #ccc; }
+        .tab:hover { 
+            background: rgba(50, 50, 60, 0.8); 
+            color: var(--text-main); 
+        }
         .tab.active {
             background: var(--bg-panel);
             color: var(--text-main);
             border-top: 2px solid var(--accent);
-            font-weight: bold;
+            box-shadow: 0 -4px 15px rgba(0, 240, 255, 0.2);
+            font-weight: 600;
+            z-index: 2;
         }
         .tab-close {
-            margin-left: auto; width: 16px; height: 16px;
+            margin-left: auto; width: 18px; height: 18px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
         }
-        .tab-close:hover { background: var(--danger); color: white; }
+        .tab-close:hover { background: var(--danger); color: white; box-shadow: 0 0 10px var(--danger); }
+        
         .new-tab-btn {
-            padding: 8px; color: var(--text-muted); cursor: pointer;
+            padding: 8px 12px; color: var(--text-muted); cursor: pointer;
+            transition: 0.3s; border-radius: 8px; margin-bottom: 4px;
         }
-        .new-tab-btn:hover { color: var(--accent); }
+        .new-tab-btn:hover { color: var(--accent); background: rgba(255,255,255,0.1); box-shadow: 0 0 10px var(--accent-glow); }
 
         /* BARRA DE NAVEGACIÓN (OMNIBOX) */
         .nav-toolbar {
-            height: 50px;
+            height: 55px;
             display: flex; align-items: center;
-            padding: 0 15px; gap: 15px;
+            padding: 0 15px; gap: 12px;
         }
 
-        .nav-controls { display: flex; gap: 8px; }
+        .nav-controls { display: flex; gap: 6px; }
         .icon-btn {
-            width: 34px; height: 34px; border-radius: 8px;
+            width: 36px; height: 36px; border-radius: 10px;
             background: transparent; border: 1px solid transparent;
             color: var(--text-main); cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            font-size: 14px; transition: var(--anim-speed);
+            font-size: 15px; transition: all var(--anim-speed);
+            position: relative;
         }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); }
-        .icon-btn:active { transform: scale(0.95); }
+        .icon-btn:hover { 
+            background: rgba(255,255,255,0.1); 
+            color: var(--accent);
+            box-shadow: 0 0 12px rgba(255,255,255,0.05);
+        }
+        .icon-btn:active { transform: scale(0.92); }
+        .icon-btn.disabled { color: #555; cursor: not-allowed; pointer-events: none; }
 
         /* CAJA DE URL INTELIGENTE */
         .omnibox-container {
-            flex: 1; position: relative;
+            flex: 1; position: relative; display: flex; align-items: center;
         }
         .omnibox {
-            width: 100%; height: 36px;
+            width: 100%; height: 40px;
             background: var(--bg-input);
             border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 0 45px 0 40px; /* Espacio para iconos */
+            border-radius: 20px;
+            padding: 0 45px 0 45px;
             color: var(--text-main);
-            font-family: 'Segoe UI', monospace; font-size: 13px;
-            transition: var(--anim-speed);
+            font-family: 'Segoe UI', monospace; font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
         }
         .omnibox:focus {
             border-color: var(--accent);
-            background: #000;
-            box-shadow: 0 0 15px var(--accent-glow);
+            background: rgba(0,0,0,0.6);
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.5);
         }
         .site-info-icon {
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-            color: var(--success); font-size: 12px;
+            position: absolute; left: 16px; 
+            color: var(--success); font-size: 14px;
+            text-shadow: 0 0 8px var(--success);
         }
         .search-action-icon {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            color: var(--accent); cursor: pointer;
+            position: absolute; right: 16px; 
+            color: var(--accent); cursor: pointer; font-size: 16px;
+            transition: 0.2s;
         }
+        .search-action-icon:hover { transform: scale(1.2); text-shadow: 0 0 10px var(--accent); }
 
         /* ==========================================
          * ÁREA DE VISUALIZACIÓN (VIEWPORT)
@@ -149,111 +179,151 @@
          */
         .viewport-container {
             flex: 1; position: relative; background: #fff;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
         }
         iframe.browser-view {
             width: 100%; height: 100%; border: none; display: none;
+            background: #ffffff;
         }
-        iframe.browser-view.active { display: block; }
+        iframe.browser-view.active { display: block; animation: fadeIn 0.4s ease; }
 
-        /* PANTALLA DE INICIO (ALEX START PAGE) */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* PANTALLA DE INICIO (ALEX START PAGE ULTIMATE) */
         .alex-start-page {
             position: absolute; inset: 0;
-            background: radial-gradient(circle at center, #1e1e24 0%, #000 100%);
+            background: radial-gradient(circle at center, rgba(30,30,40,0.9) 0%, rgba(0,0,0,1) 100%);
             display: none; flex-direction: column; align-items: center; justify-content: center;
             z-index: 50;
         }
-        .alex-start-page.active { display: flex; }
+        .alex-start-page.active { display: flex; animation: fadeIn 0.5s ease; }
         
         .start-logo {
-            font-size: 4rem; font-weight: 800;
-            background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
+            font-size: 5rem; font-weight: 900;
+            background: linear-gradient(to right, #00f0ff, #7000ff, #ff0055);
             -webkit-background-clip: text; color: transparent;
-            margin-bottom: 30px; letter-spacing: -2px;
-            text-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            margin-bottom: 40px; letter-spacing: -2px;
+            text-shadow: 0 15px 40px rgba(112, 0, 255, 0.4);
+            animation: pulseLogo 3s infinite alternate;
         }
+
+        @keyframes pulseLogo {
+            0% { filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5)); }
+            100% { filter: drop-shadow(0 0 25px rgba(255, 0, 85, 0.6)); }
+        }
+
         .start-search {
-            width: 600px; max-width: 90%;
-            height: 60px; background: rgba(255,255,255,0.05);
+            width: 650px; max-width: 90%;
+            height: 65px; background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px; padding: 0 30px;
+            border-radius: 35px; padding: 0 35px;
             color: white; font-size: 18px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            transition: 0.3s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .start-search:focus {
             background: rgba(0,0,0,0.8);
             border-color: var(--accent);
-            transform: scale(1.02);
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 240, 255, 0.2);
         }
         
         /* ACCESOS RÁPIDOS */
         .quick-links {
-            display: flex; gap: 20px; margin-top: 40px;
+            display: flex; gap: 25px; margin-top: 50px;
         }
         .q-link {
-            width: 80px; height: 80px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
+            width: 90px; height: 90px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s; color: var(--text-muted);
-            text-decoration: none;
+            cursor: pointer; transition: 0.3s; color: var(--text-muted);
+            text-decoration: none; backdrop-filter: blur(5px);
         }
-        .q-link:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-5px); }
-        .q-icon { font-size: 24px; margin-bottom: 8px; }
-        .q-text { font-size: 10px; }
+        .q-link:hover { 
+            background: rgba(255,255,255,0.1); color: white; 
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 20px var(--accent-glow);
+        }
+        .q-icon { font-size: 30px; margin-bottom: 12px; }
+        .q-text { font-size: 12px; font-weight: 600; letter-spacing: 1px; }
 
         /* ==========================================
-         * PANELES FLOTANTES (AJUSTES, HISTORIAL)
+         * PANELES FLOTANTES (AJUSTES, HISTORIAL, ETC)
          * ==========================================
          */
         .overlay-panel {
-            position: fixed; top: 80px; right: 0; bottom: 0;
-            width: 400px; background: rgba(15, 15, 18, 0.95);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--border);
-            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: fixed; top: var(--header-height); right: 0; bottom: 0;
+            width: 420px; background: rgba(15, 15, 18, 0.85);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.8);
+            transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 200; display: flex; flex-direction: column;
         }
         .overlay-panel.open { transform: translateX(0); }
         
         .panel-header {
-            padding: 20px; border-bottom: 1px solid var(--border);
+            padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.1);
             display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.3);
         }
-        .panel-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .panel-header h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+        .panel-content { flex: 1; overflow-y: auto; padding: 25px; }
+
+        /* Menú de Opciones Ultimate */
+        .menu-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;
+        }
+        .menu-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 12px; color: white; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            transition: 0.2s;
+        }
+        .menu-btn:hover { background: rgba(0, 240, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
+        .menu-btn i { font-size: 24px; }
 
         /* Estilos de Ajustes */
         .setting-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .toggle-switch {
-            width: 40px; height: 22px; background: #333;
-            border-radius: 11px; position: relative; cursor: pointer;
+            width: 46px; height: 26px; background: rgba(255,255,255,0.1);
+            border-radius: 13px; position: relative; cursor: pointer;
+            transition: 0.3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
         .toggle-switch::after {
-            content: ''; position: absolute; left: 2px; top: 2px;
-            width: 18px; height: 18px; background: white; border-radius: 50%;
-            transition: 0.2s;
+            content: ''; position: absolute; left: 3px; top: 3px;
+            width: 20px; height: 20px; background: white; border-radius: 50%;
+            transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        .toggle-switch.active { background: var(--accent); }
-        .toggle-switch.active::after { left: 20px; }
+        .toggle-switch.active { background: var(--success); box-shadow: 0 0 10px rgba(0, 255, 136, 0.4); }
+        .toggle-switch.active::after { left: 23px; }
 
         /* Lista de Historial */
         .history-item {
-            padding: 10px; border-radius: 8px;
-            cursor: pointer; display: flex; align-items: center; gap: 10px;
+            padding: 15px; border-radius: 12px; margin-bottom: 10px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer; display: flex; align-items: center; gap: 15px;
+            transition: 0.2s;
         }
-        .history-item:hover { background: rgba(255,255,255,0.05); }
-        .h-time { font-size: 10px; color: var(--text-muted); }
+        .history-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-secondary); transform: translateX(5px); }
+        .h-time { font-size: 11px; color: var(--accent); background: rgba(0,240,255,0.1); padding: 4px 8px; border-radius: 6px; }
 
         /* Notificaciones Toast */
         .toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: var(--accent); color: white;
-            padding: 10px 25px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: 0.3s; opacity: 0; font-weight: bold; font-size: 12px;
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(150px);
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent)); color: white;
+            padding: 12px 30px; border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            opacity: 0; font-weight: bold; font-size: 14px; letter-spacing: 1px; z-index: 1000;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
@@ -267,22 +337,22 @@
 
         <div class="nav-toolbar">
             <div class="nav-controls">
-                <button class="icon-btn" onclick="browser.goBack()"><i class="fas fa-arrow-left"></i></button>
-                <button class="icon-btn" onclick="browser.goForward()"><i class="fas fa-arrow-right"></i></button>
-                <button class="icon-btn" onclick="browser.reload()"><i class="fas fa-rotate-right"></i></button>
-                <button class="icon-btn" onclick="browser.goHome()"><i class="fas fa-house"></i></button>
+                <button class="icon-btn" id="btn-back" onclick="browser.goBack()" title="Atrás"><i class="fas fa-arrow-left"></i></button>
+                <button class="icon-btn" id="btn-forward" onclick="browser.goForward()" title="Adelante"><i class="fas fa-arrow-right"></i></button>
+                <button class="icon-btn" onclick="browser.reload()" title="Refrescar"><i class="fas fa-rotate-right"></i></button>
+                <button class="icon-btn" onclick="browser.goHome()" title="Página Principal"><i class="fas fa-house"></i></button>
             </div>
 
             <div class="omnibox-container">
-                <i class="fas fa-lock site-info-icon"></i>
-                <input type="text" class="omnibox" id="url-input" placeholder="Buscar o escribir URL...">
-                <i class="fas fa-magnifying-glass search-action-icon" onclick="browser.navigate()"></i>
+                <i class="fas fa-shield-check site-info-icon" title="Conexión Segura"></i>
+                <input type="text" class="omnibox" id="url-input" placeholder="Busca en Google o escribe una URL...">
+                <i class="fas fa-magnifying-glass search-action-icon" onclick="browser.navigate()" title="Buscar"></i>
             </div>
 
             <div class="nav-controls">
-                <button class="icon-btn" onclick="ui.togglePanel('bookmarks')"><i class="fas fa-star"></i></button>
-                <button class="icon-btn" onclick="ui.togglePanel('history')"><i class="fas fa-clock-rotate-left"></i></button>
-                <button class="icon-btn" onclick="ui.togglePanel('settings')"><i class="fas fa-sliders"></i></button>
+                <button class="icon-btn" onclick="ui.showToast('Marcador guardado con éxito')" title="Añadir Marcador"><i class="fas fa-star"></i></button>
+                <button class="icon-btn" onclick="ui.togglePanel('history')" title="Historial"><i class="fas fa-clock-rotate-left"></i></button>
+                <button class="icon-btn" onclick="ui.togglePanel('menu')" title="Opciones Ultimate"><i class="fas fa-bars-staggered"></i></button>
             </div>
         </div>
     </div>
@@ -295,63 +365,75 @@
             <div class="quick-links">
                 <a class="q-link" onclick="browser.navigate('wikipedia.org')">
                     <i class="fab fa-wikipedia-w q-icon"></i>
-                    <span class="q-text">Wiki</span>
+                    <span class="q-text">WIKI</span>
                 </a>
-                <a class="q-link" onclick="browser.navigate('reddit.com')">
-                    <i class="fab fa-reddit q-icon"></i>
-                    <span class="q-text">Reddit</span>
+                <a class="q-link" onclick="browser.navigate('youtube.com')">
+                    <i class="fab fa-youtube q-icon" style="color:#ff0000"></i>
+                    <span class="q-text">VIDEOS</span>
                 </a>
-                <a class="q-link" onclick="browser.navigate('twitter.com')">
-                    <i class="fab fa-twitter q-icon"></i>
-                    <span class="q-text">Social</span>
+                <a class="q-link" onclick="browser.navigate('maps.google.com')">
+                    <i class="fas fa-map-location-dot q-icon" style="color:#00f0ff"></i>
+                    <span class="q-text">MAPAS</span>
                 </a>
                 <a class="q-link" onclick="browser.navigate('github.com')">
                     <i class="fab fa-github q-icon"></i>
-                    <span class="q-text">Dev</span>
+                    <span class="q-text">DEV</span>
                 </a>
             </div>
         </div>
-    </div>
+        </div>
 
-    <div class="overlay-panel" id="panel-settings">
+    <div class="overlay-panel" id="panel-menu">
         <div class="panel-header">
-            <h3><i class="fas fa-shield-halved"></i> Configuración</h3>
+            <h3><i class="fas fa-compass"></i> Opciones de Navegador</h3>
             <button class="icon-btn" onclick="ui.closePanels()"><i class="fas fa-times"></i></button>
         </div>
         <div class="panel-content">
-            <h4 style="color:var(--accent)">Privacidad & Seguridad</h4>
-            <div class="setting-item">
-                <span>Bloquear Rastreadores</span>
-                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
-            </div>
-            <div class="setting-item">
-                <span>Forzar HTTPS</span>
-                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
-            </div>
-            <div class="setting-item">
-                <span>Sin Cookies (Modo Estricto)</span>
-                <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
-            </div>
             
-            <h4 style="color:var(--accent); margin-top:30px;">Apariencia</h4>
+            <div class="menu-grid">
+                <div class="menu-btn" onclick="ui.togglePanel('history')">
+                    <i class="fas fa-history"></i><span>Historial</span>
+                </div>
+                <div class="menu-btn" onclick="ui.showToast('Abriendo gestor de descargas...')">
+                    <i class="fas fa-download"></i><span>Descargas</span>
+                </div>
+                <div class="menu-btn" onclick="ui.showToast('Abriendo panel de extensiones...')">
+                    <i class="fas fa-puzzle-piece"></i><span>Extensiones</span>
+                </div>
+                <div class="menu-btn" onclick="ui.showToast('Mostrando contraseñas guardadas...')">
+                    <i class="fas fa-key"></i><span>Contraseñas</span>
+                </div>
+                <div class="menu-btn" onclick="window.print()">
+                    <i class="fas fa-print"></i><span>Imprimir</span>
+                </div>
+                <div class="menu-btn" onclick="ui.showToast('Cambiando tema visual...')">
+                    <i class="fas fa-palette"></i><span>Temas</span>
+                </div>
+            </div>
+
+            <h4 style="color:var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Privacidad & Seguridad</h4>
             <div class="setting-item">
-                <span>Modo Oscuro Profundo</span>
+                <span>Escudo Anti-Rastreo V9</span>
+                <div class="toggle-switch active" onclick="this.classList.toggle('active'); ui.showToast('Configuración actualizada')"></div>
+            </div>
+            <div class="setting-item">
+                <span>Forzar HTTPS Global</span>
                 <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
             </div>
             <div class="setting-item">
-                <span>Animaciones UI</span>
+                <span>Aceleración por Hardware</span>
                 <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
             </div>
 
-            <button style="width:100%; padding:15px; margin-top:30px; background:var(--danger); border:none; color:white; border-radius:10px; cursor:pointer;" onclick="dataManager.clearAll()">
-                <i class="fas fa-trash"></i> BORRAR TODOS LOS DATOS
+            <button style="width:100%; padding:18px; margin-top:30px; background:linear-gradient(45deg, #ff0055, #ff5500); border:none; color:white; border-radius:12px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow: 0 10px 20px rgba(255,0,85,0.3); transition:0.3s;" onclick="dataManager.clearAll()" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-trash-can"></i> LIMPIAR DATOS DE NAVEGACIÓN
             </button>
         </div>
     </div>
 
     <div class="overlay-panel" id="panel-history">
         <div class="panel-header">
-            <h3><i class="fas fa-clock-rotate-left"></i> Historial</h3>
+            <h3><i class="fas fa-clock-rotate-left"></i> Historial Reciente</h3>
             <button class="icon-btn" onclick="ui.closePanels()"><i class="fas fa-times"></i></button>
         </div>
         <div class="panel-content" id="history-list">
@@ -363,15 +445,14 @@
 <script>
     /**
      * ==========================================
-     * ALEXBROWSER CORE - JAVASCRIPT ENGINE
-     * Versión: Ultimate 1.0
+     * ALEXBROWSER CORE - JAVASCRIPT ENGINE ULTIMATE
      * ==========================================
      */
 
     // --- 1. GESTOR DE DATOS (Persistencia Local) ---
     const dataManager = {
         saveHistory: (url, title) => {
-            if(!url || url === 'about:blank') return;
+            if(!url || url === 'about:start') return;
             let history = JSON.parse(localStorage.getItem('ab_history') || '[]');
             const entry = { url, title, time: new Date().toLocaleTimeString() };
             history.unshift(entry);
@@ -384,12 +465,12 @@
         },
         clearAll: () => {
             localStorage.clear();
-            ui.showToast("Datos eliminados correctamente");
-            setTimeout(() => location.reload(), 1000);
+            ui.showToast("Todos los datos han sido eliminados.");
+            setTimeout(() => location.reload(), 1500);
         }
     };
 
-    // --- 2. MOTOR DE NAVEGACIÓN ---
+    // --- 2. MOTOR DE NAVEGACIÓN AVANZADO ---
     class BrowserEngine {
         constructor() {
             this.tabs = [];
@@ -399,38 +480,38 @@
         }
 
         init() {
-            this.newTab(); // Crear pestaña inicial
+            this.newTab();
             document.getElementById('url-input').addEventListener('keypress', (e) => {
                 if(e.key === 'Enter') this.navigate();
             });
             ui.renderHistory();
         }
 
-        // Crear nueva pestaña
+        // Crear nueva pestaña (con soporte para historial propio)
         newTab(url = this.homeUrl) {
             this.idCounter++;
             const tabId = this.idCounter;
             
-            // 1. Crear Objeto Pestaña
+            // Estructura de Pestaña con Historial Real Interno
             const tabData = {
                 id: tabId,
                 title: 'Nueva Pestaña',
-                url: url
+                url: url,
+                history: [url], // Guarda por dónde ha pasado esta pestaña
+                historyIndex: 0
             };
             this.tabs.push(tabData);
 
-            // 2. Crear Elemento DOM Iframe
             const iframe = document.createElement('iframe');
             iframe.className = 'browser-view';
             iframe.id = `view-${tabId}`;
-            // Hack para permitir fullscreen y permisos
             iframe.setAttribute('allowfullscreen', 'true');
             iframe.setAttribute('allow', 'geolocation; microphone; camera; midi; encrypted-media;');
             document.getElementById('viewport').appendChild(iframe);
 
-            // 3. Crear Botón Pestaña
             this.activeTabId = tabId;
             this.renderTabs();
+            this.updateNavButtons();
             
             if(url !== this.homeUrl) {
                 this.navigate(url);
@@ -439,19 +520,15 @@
             }
         }
 
-        // Cerrar pestaña
         closeTab(e, id) {
-            e.stopPropagation(); // Evitar click en la pestaña
-            if(this.tabs.length === 1) return; // No cerrar la última
+            e.stopPropagation(); 
+            if(this.tabs.length === 1) return; 
 
-            // Eliminar del array
             this.tabs = this.tabs.filter(t => t.id !== id);
             
-            // Eliminar DOM
             const frame = document.getElementById(`view-${id}`);
             if(frame) frame.remove();
 
-            // Cambiar foco si cerramos la activa
             if(this.activeTabId === id) {
                 this.activeTabId = this.tabs[this.tabs.length - 1].id;
             }
@@ -460,11 +537,9 @@
             this.switchTab(this.activeTabId);
         }
 
-        // Cambiar de pestaña
         switchTab(id) {
             this.activeTabId = id;
             
-            // Ocultar todos los frames
             document.querySelectorAll('.browser-view').forEach(el => el.classList.remove('active'));
             document.getElementById('start-page').classList.remove('active');
 
@@ -480,80 +555,123 @@
             }
 
             this.renderTabs();
+            this.updateNavButtons();
         }
 
-        // Lógica Principal de Navegación
+        // Navegación Inteligente y Registro de Historial
         navigate(inputVal = null) {
             let query = inputVal || document.getElementById('url-input').value.trim();
             if(!query) return;
 
-            // Actualizar pestaña actual
             const currentTab = this.tabs.find(t => t.id === this.activeTabId);
-            
             let finalUrl = "";
-            
-            // Detección: ¿Es URL o Búsqueda?
             const isUrl = query.includes('.') && !query.includes(' ');
             
             if(isUrl) {
-                // Es URL
                 finalUrl = query.startsWith('http') ? query : 'https://' + query;
+                currentTab.title = query;
             } else {
-                // Es Búsqueda -> Usamos DuckDuckGo para privacidad (Muestra imágenes y links)
-                // Parámetros: kae=d (tema oscuro), kp=-2 (sin safe search estricto), k1=-1 (sin anuncios)
-                finalUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&kae=d&k1=-1&ko=-1`;
+                // MOTOR DE BÚSQUEDA: GOOGLE UNRESTRICTED (usando igu=1 para permitir iframe)
+                // Esto te permite ver Web, Imágenes, Videos, Maps, etc.
+                finalUrl = `https://www.google.com/search?igu=1&q=${encodeURIComponent(query)}`;
+                currentTab.title = `🔍 ${query}`;
             }
 
-            // Actualizar Datos
+            // Lógica para que funcione "Atrás" y "Adelante"
+            // Borramos el historial futuro si navegamos desde un punto anterior
+            currentTab.history = currentTab.history.slice(0, currentTab.historyIndex + 1);
+            currentTab.history.push(finalUrl);
+            currentTab.historyIndex++;
             currentTab.url = finalUrl;
-            currentTab.title = isUrl ? query : `🔍 ${query}`;
             
-            // Cargar en Iframe
+            this.loadUrlIntoFrame(finalUrl, currentTab.title);
+        }
+
+        // Método auxiliar para cargar en el Iframe
+        loadUrlIntoFrame(url, title) {
             document.getElementById('start-page').classList.remove('active');
             const frame = document.getElementById(`view-${this.activeTabId}`);
             frame.classList.add('active');
-            frame.src = finalUrl;
+            frame.src = url;
 
-            // Actualizar UI
-            document.getElementById('url-input').value = finalUrl;
+            document.getElementById('url-input').value = url;
             this.renderTabs();
-            dataManager.saveHistory(finalUrl, currentTab.title);
+            this.updateNavButtons();
+            dataManager.saveHistory(url, title);
+        }
+
+        // FUNCIONES DE NAVEGACIÓN REALES POR PESTAÑA
+        goBack() {
+            const tab = this.tabs.find(t => t.id === this.activeTabId);
+            if(tab && tab.historyIndex > 0) {
+                tab.historyIndex--;
+                tab.url = tab.history[tab.historyIndex];
+                
+                if(tab.url === 'about:start') {
+                    this.switchTab(tab.id); // Vuelve a la pantalla de inicio
+                } else {
+                    this.loadUrlIntoFrame(tab.url, "Página Anterior");
+                }
+            }
+        }
+
+        goForward() {
+            const tab = this.tabs.find(t => t.id === this.activeTabId);
+            if(tab && tab.historyIndex < tab.history.length - 1) {
+                tab.historyIndex++;
+                tab.url = tab.history[tab.historyIndex];
+                this.loadUrlIntoFrame(tab.url, "Página Siguiente");
+            }
         }
 
         reload() {
             const frame = document.getElementById(`view-${this.activeTabId}`);
             if(frame.src) frame.src = frame.src;
+            ui.showToast("Página actualizada");
         }
 
         goHome() {
             const currentTab = this.tabs.find(t => t.id === this.activeTabId);
+            currentTab.history.push('about:start');
+            currentTab.historyIndex++;
             currentTab.url = 'about:start';
             currentTab.title = 'Inicio';
             this.switchTab(this.activeTabId);
         }
 
-        goBack() { history.back(); } // Limitado en iframes
-        goForward() { history.forward(); } // Limitado en iframes
+        // Actualiza el estado visual de los botones Atrás/Adelante
+        updateNavButtons() {
+            const tab = this.tabs.find(t => t.id === this.activeTabId);
+            const btnBack = document.getElementById('btn-back');
+            const btnForward = document.getElementById('btn-forward');
 
-        // Renderizado de la barra de pestañas
+            if(tab.historyIndex > 0) btnBack.classList.remove('disabled');
+            else btnBack.classList.add('disabled');
+
+            if(tab.historyIndex < tab.history.length - 1) btnForward.classList.remove('disabled');
+            else btnForward.classList.add('disabled');
+        }
+
         renderTabs() {
             const container = document.getElementById('tabs-container');
-            container.innerHTML = ''; // Limpiar
+            container.innerHTML = ''; 
 
             this.tabs.forEach(tab => {
                 const tabEl = document.createElement('div');
                 tabEl.className = `tab ${tab.id === this.activeTabId ? 'active' : ''}`;
                 tabEl.onclick = () => this.switchTab(tab.id);
                 
+                let icon = tab.url.includes('google.com') ? '<i class="fab fa-google" style="color:#00f0ff"></i>' : '<i class="fas fa-globe"></i>';
+                if(tab.url === 'about:start') icon = '<i class="fas fa-house"></i>';
+
                 tabEl.innerHTML = `
-                    <i class="fas fa-globe"></i>
-                    <span style="max-width:100px; overflow:hidden; white-space:nowrap;">${tab.title}</span>
+                    ${icon}
+                    <span style="max-width:110px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${tab.title}</span>
                     <div class="tab-close" onclick="browser.closeTab(event, ${tab.id})">&times;</div>
                 `;
                 container.appendChild(tabEl);
             });
 
-            // Botón Nueva Pestaña
             const newBtn = document.createElement('div');
             newBtn.className = 'new-tab-btn';
             newBtn.innerHTML = '<i class="fas fa-plus"></i>';
@@ -567,7 +685,7 @@
         togglePanel: (id) => {
             const panel = document.getElementById(`panel-${id}`);
             const isOpen = panel.classList.contains('open');
-            ui.closePanels(); // Cerrar otros primero
+            ui.closePanels(); 
             if(!isOpen) panel.classList.add('open');
         },
         closePanels: () => {
@@ -577,15 +695,15 @@
             const list = dataManager.getHistory();
             const container = document.getElementById('history-list');
             if(list.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#555; margin-top:20px;">Sin historial reciente</div>';
+                container.innerHTML = '<div style="text-align:center; color:#777; margin-top:30px;"><i class="fas fa-ghost" style="font-size:40px; margin-bottom:15px; display:block;"></i>No hay historial reciente</div>';
                 return;
             }
             container.innerHTML = list.map(item => `
                 <div class="history-item" onclick="browser.navigate('${item.url}'); ui.closePanels()">
-                    <i class="fas fa-globe" style="color:var(--accent)"></i>
-                    <div style="flex:1">
-                        <div style="font-size:13px; font-weight:bold;">${item.title}</div>
-                        <div style="font-size:10px; opacity:0.6">${item.url.substring(0,30)}...</div>
+                    <i class="fas fa-link" style="color:var(--accent); font-size:16px;"></i>
+                    <div style="flex:1; overflow:hidden;">
+                        <div style="font-size:14px; font-weight:bold; white-space:nowrap; text-overflow:ellipsis;">${item.title}</div>
+                        <div style="font-size:11px; opacity:0.6; white-space:nowrap; text-overflow:ellipsis;">${item.url}</div>
                     </div>
                     <span class="h-time">${item.time}</span>
                 </div>
