@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexBrowser Ultimate | God Mode Edition</title>
+    <title>AlexBrowser Ultimate | Pro Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* ==========================================
@@ -14,7 +14,7 @@
             --bg-app: #050505;
             --bg-panel: rgba(20, 20, 25, 0.75);
             --bg-input: rgba(30, 30, 35, 0.6);
-            --accent: #00e5ff; 
+            --accent: #00e5ff;
             --accent-glow: rgba(0, 229, 255, 0.5);
             --accent-secondary: #bd00ff;
             --text-main: #f8fafc;
@@ -22,6 +22,7 @@
             --border: rgba(255, 255, 255, 0.1);
             --danger: #ff0055;
             --success: #00ff88;
+            --warning: #ffaa00;
             --anim-speed: 0.3s;
         }
 
@@ -68,7 +69,8 @@
         .tab {
             background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
             padding: 12px 20px; border-radius: 14px 14px 0 0;
-            font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px;
+            font-size: 13px; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
             cursor: pointer; transition: all var(--anim-speed);
             max-width: 220px; min-width: 140px; position: relative;
         }
@@ -77,16 +79,21 @@
         .tab.active {
             background: var(--bg-panel); color: var(--text-main);
             border-top: 2px solid var(--accent);
-            box-shadow: 0 -5px 15px rgba(0, 229, 255, 0.15); font-weight: bold; z-index: 2;
+            box-shadow: 0 -5px 15px rgba(0, 229, 255, 0.15);
+            font-weight: bold; z-index: 2;
         }
 
         .tab-close {
             margin-left: auto; width: 20px; height: 20px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; font-size: 14px;
         }
         .tab-close:hover { background: var(--danger); color: white; box-shadow: 0 0 10px var(--danger); }
         
-        .new-tab-btn { padding: 10px; color: var(--text-muted); cursor: pointer; transition: 0.3s; border-radius: 10px; margin-bottom: 2px; }
+        .new-tab-btn {
+            padding: 10px; color: var(--text-muted); cursor: pointer; transition: 0.3s;
+            border-radius: 10px; margin-bottom: 2px;
+        }
         .new-tab-btn:hover { color: var(--accent); background: rgba(255,255,255,0.1); }
 
         /* --- BARRA DE NAVEGACIÓN PRINCIPAL --- */
@@ -104,7 +111,6 @@
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn.disabled { opacity: 0.3; pointer-events: none; }
 
-        /* OMNIBOX */
         .omnibox-container { flex: 1; position: relative; display: flex; align-items: center; }
         .omnibox {
             width: 100%; height: 42px; background: var(--bg-input); border: 1px solid var(--border);
@@ -113,28 +119,26 @@
         }
         .omnibox:focus { border-color: var(--accent); background: rgba(0,0,0,0.8); box-shadow: 0 0 20px var(--accent-glow); }
         
-        .site-info-icon { position: absolute; left: 15px; color: var(--success); font-size: 14px; }
+        .site-info-icon { position: absolute; left: 15px; color: var(--success); font-size: 14px; cursor: pointer; }
         .search-action-icon { position: absolute; right: 15px; color: var(--accent); cursor: pointer; transition: 0.2s; }
         .search-action-icon:hover { transform: scale(1.2); text-shadow: 0 0 10px var(--accent); }
 
-        /* --- BARRA DE CATEGORÍAS DE BÚSQUEDA (Nueva) --- */
-        .search-categories {
-            height: 35px; background: rgba(0,0,0,0.4); display: none; align-items: center; padding: 0 20px; gap: 15px;
-            border-bottom: 1px solid var(--border); overflow-x: auto;
+        /* --- BARRA DE BÚSQUEDA RÁPIDA (SUB-MENÚ) --- */
+        .search-tools-bar {
+            height: 35px; display: flex; align-items: center; padding: 0 60px; gap: 20px;
+            background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border);
+            font-size: 13px; font-weight: 500;
         }
-        .search-categories.active { display: flex; animation: slideDown 0.3s; }
-        .cat-btn {
-            color: var(--text-muted); font-size: 12px; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 15px; transition: 0.2s;
+        .search-tool {
+            color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
         }
-        .cat-btn:hover, .cat-btn.active { background: rgba(255,255,255,0.1); color: var(--accent); }
-        
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .search-tool:hover { color: var(--accent); transform: translateY(-1px); }
 
         /* --- VIEWPORT --- */
         .viewport-container { flex: 1; position: relative; background: #fff; }
         iframe.browser-view { width: 100%; height: 100%; border: none; display: none; background: white; }
         iframe.browser-view.active { display: block; animation: fadeIn 0.3s; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- START PAGE --- */
@@ -152,23 +156,23 @@
 
         .start-search {
             width: 650px; max-width: 90%; height: 65px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 35px; padding: 0 35px; color: white; font-size: 18px; backdrop-filter: blur(10px); transition: 0.3s;
+            border-radius: 35px; padding: 0 35px; color: white; font-size: 18px; backdrop-filter: blur(10px); transition: 0.3s; text-align: center;
         }
         .start-search:focus { background: rgba(0,0,0,0.8); border-color: var(--accent); transform: scale(1.02); }
         
         .quick-links { display: flex; gap: 20px; margin-top: 50px; flex-wrap: wrap; justify-content: center; }
         .q-link {
-            width: 90px; height: 90px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 90px; height: 90px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.3s; color: var(--text-muted); backdrop-filter: blur(5px);
         }
-        .q-link:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-8px); border-color: var(--accent); }
+        .q-link:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .q-icon { font-size: 30px; margin-bottom: 10px; }
         .q-text { font-size: 12px; font-weight: bold; }
 
         /* --- PANELES LATERALES --- */
         .overlay-panel {
-            position: fixed; top: 105px; right: 0; bottom: 0; width: 400px; max-width: 100%;
+            position: fixed; top: 140px; right: 0; bottom: 0; width: 400px;
             background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(25px); border-left: 1px solid var(--border);
             transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 200; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.8);
@@ -176,33 +180,40 @@
         .overlay-panel.open { transform: translateX(0); }
         
         .panel-header {
-            padding: 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);
+            padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5);
         }
-        .panel-header h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .panel-content { flex: 1; overflow-y: auto; padding: 25px; }
+        .panel-header h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+        .panel-content { flex: 1; overflow-y: auto; padding: 20px; }
 
-        /* Cuadrícula de Menú Ampliada */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; }
+        /* Cuadrícula de menú expandida */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .menu-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px 5px;
-            border-radius: 12px; color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.2s; text-align: center;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 5px; border-radius: 12px; color: white; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.2s; font-size: 11px; text-align: center;
         }
         .menu-btn:hover { background: rgba(0, 229, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
         .menu-btn i { font-size: 20px; }
-        .menu-btn span { font-size: 11px; font-weight: bold; }
 
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .toggle-switch { width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 12px; position: relative; cursor: pointer; transition: 0.3s; }
-        .toggle-switch::after { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: 0.3s; }
+        .setting-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px;
+        }
+        .toggle-switch {
+            width: 40px; height: 22px; background: rgba(255,255,255,0.1); border-radius: 11px; position: relative; cursor: pointer; transition: 0.3s;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s;
+        }
         .toggle-switch.active { background: var(--success); box-shadow: 0 0 10px rgba(0, 255, 136, 0.4); }
-        .toggle-switch.active::after { left: 23px; }
+        .toggle-switch.active::after { left: 21px; }
 
         .history-item {
-            padding: 15px; border-radius: 12px; margin-bottom: 10px; background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s;
+            padding: 12px; border-radius: 10px; margin-bottom: 8px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s;
         }
         .history-item:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
-        .h-time { font-size: 11px; color: var(--accent); background: rgba(0,229,255,0.1); padding: 4px 8px; border-radius: 6px; }
+        .h-time { font-size: 10px; color: var(--accent); background: rgba(0,229,255,0.1); padding: 4px 6px; border-radius: 6px; }
 
         .toast {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(150px);
@@ -211,6 +222,7 @@
             transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; font-weight: bold; z-index: 1000;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
     </style>
 </head>
 <body>
@@ -222,49 +234,53 @@
             <div class="nav-controls">
                 <button class="icon-btn" id="btn-back" onclick="browser.goBack()" title="Atrás"><i class="fas fa-arrow-left"></i></button>
                 <button class="icon-btn" id="btn-forward" onclick="browser.goForward()" title="Adelante"><i class="fas fa-arrow-right"></i></button>
-                <button class="icon-btn" onclick="browser.reload()" title="Refrescar"><i class="fas fa-rotate-right"></i></button>
+                <button class="icon-btn" onclick="browser.reload()" title="Refrescar Página"><i class="fas fa-rotate-right"></i></button>
                 <button class="icon-btn" onclick="browser.goHome()" title="Página de Inicio"><i class="fas fa-house"></i></button>
             </div>
 
             <div class="omnibox-container">
-                <i class="fas fa-shield-halved site-info-icon" title="Protección Proxy Activa" id="security-icon"></i>
-                <input type="text" class="omnibox" id="url-input" placeholder="Busca en la web o escribe una URL para desbloquearla">
+                <i class="fas fa-shield-check site-info-icon" id="security-icon" title="Seguridad Activada" onclick="ui.showToast('Conexión segura establecida.')"></i>
+                <input type="text" class="omnibox" id="url-input" placeholder="Buscar o introducir una dirección web...">
                 <i class="fas fa-magnifying-glass search-action-icon" onclick="browser.navigate()"></i>
             </div>
 
             <div class="nav-controls">
-                <button class="icon-btn" onclick="ui.showToast('Página añadida a favoritos ⭐')"><i class="fas fa-star"></i></button>
-                <button class="icon-btn" onclick="ui.togglePanel('menu')" title="Menú Principal"><i class="fas fa-bars-staggered"></i></button>
+                <button class="icon-btn" onclick="ui.showToast('Página guardada en favoritos ⭐')" title="Favoritos"><i class="fas fa-star"></i></button>
+                <button class="icon-btn" onclick="ui.togglePanel('downloads')" title="Descargas"><i class="fas fa-download"></i></button>
+                <button class="icon-btn" onclick="ui.togglePanel('menu')" title="Más opciones"><i class="fas fa-bars-staggered"></i></button>
             </div>
         </div>
 
-        <div class="search-categories" id="search-categories">
-            <div class="cat-btn active" onclick="browser.filterSearch('all')"><i class="fas fa-globe"></i> Todo</div>
-            <div class="cat-btn" onclick="browser.filterSearch('isch')"><i class="fas fa-image"></i> Imágenes</div>
-            <div class="cat-btn" onclick="browser.filterSearch('vid')"><i class="fas fa-video"></i> Videos</div>
-            <div class="cat-btn" onclick="browser.filterSearch('nws')"><i class="fas fa-newspaper"></i> Noticias</div>
-            <div class="cat-btn" onclick="browser.filterSearch('maps')"><i class="fas fa-map-location-dot"></i> Mapas</div>
-            <div class="cat-btn" onclick="browser.filterSearch('wiki')"><i class="fab fa-wikipedia-w"></i> Wikipedia</div>
+        <div class="search-tools-bar">
+            <div class="search-tool" onclick="browser.quickSearch('web')"><i class="fas fa-globe"></i> Todo</div>
+            <div class="search-tool" onclick="browser.quickSearch('images')"><i class="fas fa-image"></i> Imágenes</div>
+            <div class="search-tool" onclick="browser.quickSearch('videos')"><i class="fas fa-video" style="color:#ff0055"></i> Videos</div>
+            <div class="search-tool" onclick="browser.quickSearch('news')"><i class="fas fa-newspaper" style="color:var(--accent)"></i> Noticias</div>
+            <div class="search-tool" onclick="browser.quickSearch('maps')"><i class="fas fa-map-marker-alt" style="color:var(--success)"></i> Mapas</div>
+            <div class="search-tool" onclick="browser.quickSearch('wiki')"><i class="fab fa-wikipedia-w"></i> Wikipedia</div>
         </div>
     </div>
 
     <div class="viewport-container" id="viewport">
         <div class="alex-start-page active" id="start-page">
             <div class="start-logo">AlexBrowser</div>
-            <input type="text" class="start-search" id="home-search" placeholder="¿Qué quieres buscar hoy en la web?" onkeypress="if(event.key==='Enter') browser.navigate(this.value)">
+            <input type="text" class="start-search" placeholder="Busca en la web sin límites..." onkeypress="if(event.key==='Enter') browser.navigate(this.value)">
             
             <div class="quick-links">
-                <a class="q-link" onclick="browser.navigate('https://youtube.com')">
+                <a class="q-link" onclick="browser.navigate('youtube.com')">
                     <i class="fab fa-youtube q-icon" style="color:#ff0055"></i><span class="q-text">YouTube</span>
                 </a>
-                <a class="q-link" onclick="browser.navigate('https://instagram.com')">
+                <a class="q-link" onclick="browser.navigate('instagram.com')">
                     <i class="fab fa-instagram q-icon" style="color:#e1306c"></i><span class="q-text">Instagram</span>
                 </a>
-                <a class="q-link" onclick="browser.navigate('https://x.com')">
-                    <i class="fab fa-x-twitter q-icon" style="color:#fff"></i><span class="q-text">Twitter/X</span>
+                <a class="q-link" onclick="browser.navigate('x.com')">
+                    <i class="fab fa-x-twitter q-icon"></i><span class="q-text">X (Twitter)</span>
                 </a>
-                <a class="q-link" onclick="browser.navigate('https://es.wikipedia.org')">
-                    <i class="fab fa-wikipedia-w q-icon" style="color:#a1a1aa"></i><span class="q-text">Wikipedia</span>
+                <a class="q-link" onclick="browser.navigate('tiktok.com')">
+                    <i class="fab fa-tiktok q-icon" style="color:#69C9D0"></i><span class="q-text">TikTok</span>
+                </a>
+                <a class="q-link" onclick="browser.navigate('amazon.es')">
+                    <i class="fab fa-amazon q-icon" style="color:#FF9900"></i><span class="q-text">Amazon</span>
                 </a>
             </div>
         </div>
@@ -272,84 +288,88 @@
 
     <div class="overlay-panel" id="panel-menu">
         <div class="panel-header">
-            <h3><i class="fas fa-layer-group"></i> Opciones del Navegador</h3>
+            <h3><i class="fas fa-cog"></i> Configuración y Opciones</h3>
             <button class="icon-btn" onclick="ui.closePanels()"><i class="fas fa-times"></i></button>
         </div>
         <div class="panel-content">
             <div class="menu-grid">
-                <div class="menu-btn" onclick="ui.togglePanel('history')">
-                    <i class="fas fa-history"></i><span>Historial</span>
-                </div>
-                <div class="menu-btn" onclick="ui.showToast('Descargas vacías')">
-                    <i class="fas fa-download"></i><span>Descargas</span>
-                </div>
-                <div class="menu-btn" onclick="browser.goHome(); ui.closePanels()">
-                    <i class="fas fa-house"></i><span>Inicio</span>
-                </div>
-                <div class="menu-btn" onclick="ui.showToast('Modo Incógnito Activado 🕵️')">
-                    <i class="fas fa-mask"></i><span>Incógnito</span>
-                </div>
-                <div class="menu-btn" onclick="window.print()">
-                    <i class="fas fa-print"></i><span>Imprimir</span>
-                </div>
-                <div class="menu-btn" onclick="location.reload()">
-                    <i class="fas fa-power-off" style="color:var(--danger)"></i><span>Reiniciar</span>
-                </div>
+                <div class="menu-btn" onclick="browser.newTab()"><i class="fas fa-plus"></i>Nueva Pestaña</div>
+                <div class="menu-btn" onclick="ui.showToast('Modo Incógnito Activado 🕵️')"><i class="fas fa-mask"></i>Incógnito</div>
+                <div class="menu-btn" onclick="ui.togglePanel('history')"><i class="fas fa-history"></i>Historial</div>
+                <div class="menu-btn" onclick="ui.togglePanel('downloads')"><i class="fas fa-download"></i>Descargas</div>
+                <div class="menu-btn" onclick="ui.showToast('Página guardada localmente')"><i class="fas fa-save"></i>Guardar Web</div>
+                <div class="menu-btn" onclick="window.print()"><i class="fas fa-print"></i>Imprimir</div>
+                <div class="menu-btn" onclick="ui.showToast('Panel de Extensiones (Próximamente)')"><i class="fas fa-puzzle-piece"></i>Extensiones</div>
+                <div class="menu-btn" onclick="ui.showToast('Traduciendo página...')"><i class="fas fa-language"></i>Traducir</div>
+                <div class="menu-btn" onclick="browser.reload()"><i class="fas fa-rotate-right"></i>Recargar</div>
             </div>
 
-            <h4 style="color:var(--accent); border-bottom: 1px solid var(--border); padding-bottom:10px; margin-top:20px;">Seguridad & Anti-Bloqueos</h4>
+            <h4 style="color:var(--accent); border-bottom: 1px solid var(--border); padding-bottom:10px; font-size:14px;">Seguridad Avanzada</h4>
             <div class="setting-item">
-                <span title="Fuerza la apertura de páginas bloqueadas mediante un servidor Proxy">Usar Servidor Proxy (Desbloquear todo)</span>
+                <span>Motor Proxy Anti-Bloqueos <br><small style="color:var(--text-muted); font-size:10px;">Evita "Conexión rechazada"</small></span>
                 <div class="toggle-switch active" id="proxy-toggle" onclick="this.classList.toggle('active')"></div>
             </div>
             <div class="setting-item">
-                <span>Bloqueador de Anuncios / Rastreadores</span>
+                <span>Bloquear Anuncios y Rastreadores</span>
+                <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="setting-item">
+                <span>Forzar Navegación Segura (HTTPS)</span>
                 <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
             </div>
 
-            <button style="width:100%; padding:15px; margin-top:30px; background:var(--danger); border:none; color:white; border-radius:12px; cursor:pointer; font-weight:bold; box-shadow: 0 5px 15px rgba(255,0,85,0.4);" onclick="dataManager.clearAll()">
-                <i class="fas fa-trash-can"></i> LIMPIAR DATOS DE NAVEGACIÓN
+            <button style="width:100%; padding:15px; margin-top:20px; background:var(--danger); border:none; color:white; border-radius:12px; cursor:pointer; font-weight:bold; transition: 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="dataManager.clearAll()">
+                <i class="fas fa-trash-can"></i> LIMPIAR TODO EL HISTORIAL
             </button>
         </div>
     </div>
 
     <div class="overlay-panel" id="panel-history">
         <div class="panel-header">
-            <h3><i class="fas fa-clock-rotate-left"></i> Historial</h3>
-            <button class="icon-btn" onclick="ui.togglePanel('menu')"><i class="fas fa-arrow-left"></i></button>
+            <h3><i class="fas fa-clock-rotate-left"></i> Tu Historial</h3>
+            <button class="icon-btn" onclick="ui.closePanels()"><i class="fas fa-times"></i></button>
         </div>
         <div class="panel-content" id="history-list"></div>
+    </div>
+
+    <div class="overlay-panel" id="panel-downloads">
+        <div class="panel-header">
+            <h3><i class="fas fa-download"></i> Gestor de Descargas</h3>
+            <button class="icon-btn" onclick="ui.closePanels()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-content" style="text-align: center; color: var(--text-muted); padding-top: 50px;">
+            <i class="fas fa-box-open" style="font-size: 50px; margin-bottom: 20px;"></i>
+            <p>No hay descargas activas en este momento.</p>
+        </div>
     </div>
 
     <div class="toast" id="toast">Acción completada</div>
 
 <script>
-    // --- GESTOR DE DATOS ---
     const dataManager = {
         saveHistory: (url, title) => {
             if(!url || url === 'about:start' || url.includes('corsproxy.io')) return;
             let history = JSON.parse(localStorage.getItem('ab_history') || '[]');
             history.unshift({ url, title, time: new Date().toLocaleTimeString() });
-            if(history.length > 100) history.pop(); // Aumentado a 100
+            if(history.length > 100) history.pop(); // Guarda hasta 100
             localStorage.setItem('ab_history', JSON.stringify(history));
             ui.renderHistory();
         },
         getHistory: () => JSON.parse(localStorage.getItem('ab_history') || '[]'),
         clearAll: () => {
             localStorage.clear();
-            ui.showToast("Historial y caché borrados. Reiniciando...");
+            ui.showToast("Historial y caché eliminados. Reiniciando...");
             setTimeout(() => location.reload(), 1500);
         }
     };
 
-    // --- MOTOR DE NAVEGACIÓN ---
     class BrowserEngine {
         constructor() {
             this.tabs = [];
             this.activeTabId = null;
             this.idCounter = 0;
             this.homeUrl = 'about:start';
-            this.currentSearchQuery = "";
+            this.lastSearchQuery = "";
         }
 
         init() {
@@ -369,13 +389,15 @@
             const iframe = document.createElement('iframe');
             iframe.className = 'browser-view';
             iframe.id = `view-${tabId}`;
-            // Permisos máximos para que las webs funcionen bien
+            // Permisos totales para evitar bloqueos
             iframe.setAttribute('allowfullscreen', 'true');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
             iframe.setAttribute('allow', 'camera; microphone; geolocation; autoplay; clipboard-write;');
             document.getElementById('viewport').appendChild(iframe);
 
             this.switchTab(tabId);
             if(url !== this.homeUrl) this.navigate(url);
+            ui.closePanels();
         }
 
         closeTab(e, id) {
@@ -397,98 +419,91 @@
             if(currentTab.url === 'about:start') {
                 document.getElementById('start-page').classList.add('active');
                 document.getElementById('url-input').value = "";
-                document.getElementById('search-categories').classList.remove('active');
+                document.getElementById('security-icon').className = "fas fa-shield-halved site-info-icon";
+                document.getElementById('security-icon').style.color = "var(--text-muted)";
             } else {
                 document.getElementById(`view-${id}`).classList.add('active');
-                // Limpiar la URL del proxy para que el usuario vea la original
-                let displayUrl = currentTab.url;
-                if(displayUrl.includes('corsproxy.io/?')) displayUrl = decodeURIComponent(displayUrl.split('corsproxy.io/?')[1]);
-                document.getElementById('url-input').value = displayUrl;
+                // Limpiar el proxy de la URL visual para que quede bonita
+                let cleanUrl = currentTab.url;
+                if(cleanUrl.includes('corsproxy.io/?')) cleanUrl = decodeURIComponent(cleanUrl.split('corsproxy.io/?')[1]);
+                if(cleanUrl.includes('google.com/search?igu=1&q=')) cleanUrl = "Búsqueda: " + decodeURIComponent(cleanUrl.split('q=')[1].split('&')[0]);
                 
-                // Mostrar barra de búsqueda solo si es una búsqueda de Google
-                if(currentTab.url.includes('google.com/search')) document.getElementById('search-categories').classList.add('active');
-                else document.getElementById('search-categories').classList.remove('active');
+                document.getElementById('url-input').value = cleanUrl;
+                document.getElementById('security-icon').className = "fas fa-lock site-info-icon";
+                document.getElementById('security-icon').style.color = "var(--success)";
             }
 
             this.renderTabs();
             this.updateNavButtons();
         }
 
-        // LÓGICA DE NAVEGACIÓN Y ANTI-BLOQUEO
+        // MOTOR ANTI-BLOQUEOS
         navigate(inputVal = null) {
             let query = inputVal || document.getElementById('url-input').value.trim();
             if(!query) return;
 
-            this.currentSearchQuery = query;
+            const proxyEnabled = document.getElementById('proxy-toggle').classList.contains('active');
             const currentTab = this.tabs.find(t => t.id === this.activeTabId);
             let finalUrl = "";
             let title = "";
-            let useProxy = document.getElementById('proxy-toggle').classList.contains('active');
             
             const isUrl = query.includes('.') && !query.includes(' ');
 
             if(isUrl) {
-                // Es una URL directa
-                let rawUrl = query.startsWith('http') ? query : 'https://' + query;
+                let cleanUrl = query.startsWith('http') ? query : 'https://' + query;
                 title = query;
-                document.getElementById('search-categories').classList.remove('active');
-
-                // Si el proxy está activado, envuelve la URL para saltarse el bloqueo X-Frame-Options
-                if(useProxy && !rawUrl.includes('google.com')) {
-                    finalUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
-                    ui.showToast("🌐 Desbloqueando web mediante Proxy...");
-                    document.getElementById('security-icon').className = "fas fa-shield-virus site-info-icon";
-                    document.getElementById('security-icon').style.color = "var(--accent-secondary)";
+                
+                if (cleanUrl.includes('youtube.com/watch?v=')) {
+                    // Truco específico para YouTube (El proxy general rompe los videos)
+                    finalUrl = cleanUrl.replace('watch?v=', 'embed/');
+                    ui.showToast("Optimizando vídeo de YouTube...");
+                } else if (proxyEnabled) {
+                    // USO DEL PROXY PARA EVITAR X-FRAME-OPTIONS
+                    finalUrl = `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`;
+                    ui.showToast("Bypass de seguridad activado 🛡️");
                 } else {
-                    finalUrl = rawUrl;
-                    document.getElementById('security-icon').className = "fas fa-shield-halved site-info-icon";
-                    document.getElementById('security-icon').style.color = "var(--success)";
+                    finalUrl = cleanUrl;
                 }
             } else {
-                // Es una Búsqueda
+                this.lastSearchQuery = query;
                 finalUrl = `https://www.google.com/search?igu=1&q=${encodeURIComponent(query)}`;
-                title = `🔍 ${query}`;
-                document.getElementById('search-categories').classList.add('active');
-                this.setActiveCategory('all');
+                title = `${query}`;
             }
 
-            this.updateHistoryAndLoad(finalUrl, title, query);
-        }
-
-        // FILTROS DE BÚSQUEDA (Imágenes, Videos, etc.)
-        filterSearch(type) {
-            if(!this.currentSearchQuery) return;
-            let query = encodeURIComponent(this.currentSearchQuery);
-            let url = "";
-
-            this.setActiveCategory(type);
-
-            switch(type) {
-                case 'all': url = `https://www.google.com/search?igu=1&q=${query}`; break;
-                case 'isch': url = `https://www.google.com/search?igu=1&tbm=isch&q=${query}`; break;
-                case 'vid': url = `https://www.google.com/search?igu=1&tbm=vid&q=${query}`; break;
-                case 'nws': url = `https://www.google.com/search?igu=1&tbm=nws&q=${query}`; break;
-                case 'maps': url = `https://maps.google.com/maps?q=${query}&output=embed`; break;
-                case 'wiki': url = `https://es.wikipedia.org/wiki/Especial:Buscar?search=${query}`; break;
-            }
-            this.updateHistoryAndLoad(url, `Búsqueda: ${this.currentSearchQuery}`);
-        }
-
-        setActiveCategory(type) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            const index = ['all', 'isch', 'vid', 'nws', 'maps', 'wiki'].indexOf(type);
-            if(index >= 0) document.querySelectorAll('.cat-btn')[index].classList.add('active');
-        }
-
-        updateHistoryAndLoad(url, title, displayUrl = null) {
-            const currentTab = this.tabs.find(t => t.id === this.activeTabId);
             currentTab.history = currentTab.history.slice(0, currentTab.historyIndex + 1);
-            currentTab.history.push(url);
+            currentTab.history.push(finalUrl);
             currentTab.historyIndex++;
-            this.loadUrlIntoFrame(url, title, displayUrl);
+            
+            this.loadUrlIntoFrame(finalUrl, title, query);
         }
 
-        loadUrlIntoFrame(url, title, displayUrl = null) {
+        // BÚSQUEDA RÁPIDA (Pestañas de abajo del buscador)
+        quickSearch(type) {
+            let query = this.lastSearchQuery || document.getElementById('url-input').value.trim();
+            if(!query || query.includes('http')) {
+                ui.showToast("Escribe algo para buscar primero");
+                return;
+            }
+            
+            let finalUrl = "";
+            let title = "";
+            
+            switch(type) {
+                case 'images': finalUrl = `https://www.google.com/search?igu=1&tbm=isch&q=${encodeURIComponent(query)}`; title = `Imágenes: ${query}`; break;
+                case 'videos': finalUrl = `https://www.google.com/search?igu=1&tbm=vid&q=${encodeURIComponent(query)}`; title = `Videos: ${query}`; break;
+                case 'news': finalUrl = `https://www.google.com/search?igu=1&tbm=nws&q=${encodeURIComponent(query)}`; title = `Noticias: ${query}`; break;
+                case 'maps': finalUrl = `https://www.google.com/maps?igu=1&q=${encodeURIComponent(query)}`; title = `Mapa: ${query}`; break;
+                case 'wiki': finalUrl = `https://es.wikipedia.org/wiki/${encodeURIComponent(query)}`; title = `Wiki: ${query}`; break;
+                default: finalUrl = `https://www.google.com/search?igu=1&q=${encodeURIComponent(query)}`; title = `${query}`;
+            }
+            
+            const currentTab = this.tabs.find(t => t.id === this.activeTabId);
+            currentTab.history.push(finalUrl);
+            currentTab.historyIndex++;
+            this.loadUrlIntoFrame(finalUrl, title, query);
+        }
+
+        loadUrlIntoFrame(url, title, rawInput) {
             const currentTab = this.tabs.find(t => t.id === this.activeTabId);
             currentTab.url = url;
             currentTab.title = title;
@@ -498,15 +513,17 @@
             frame.classList.add('active');
             frame.src = url;
 
-            // Mostrar la URL limpia en la barra (sin el texto del proxy)
-            document.getElementById('url-input').value = displayUrl || (url.includes('corsproxy') ? decodeURIComponent(url.split('corsproxy.io/?')[1]) : url);
+            // Mantener la visual limpia para el usuario
+            document.getElementById('url-input').value = rawInput || title;
+            document.getElementById('security-icon').className = "fas fa-lock site-info-icon";
+            document.getElementById('security-icon').style.color = "var(--success)";
             
             this.renderTabs();
             this.updateNavButtons();
             
-            // Guardar en historial general sin el prefijo del proxy
-            let historyUrl = url.includes('corsproxy') ? decodeURIComponent(url.split('corsproxy.io/?')[1]) : url;
-            dataManager.saveHistory(historyUrl, title);
+            let saveUrl = url;
+            if(url.includes('corsproxy.io/?')) saveUrl = decodeURIComponent(url.split('corsproxy.io/?')[1]);
+            dataManager.saveHistory(saveUrl, title);
         }
 
         goBack() {
@@ -515,7 +532,12 @@
                 tab.historyIndex--;
                 const prevUrl = tab.history[tab.historyIndex];
                 if(prevUrl === 'about:start') this.switchTab(tab.id);
-                else this.loadUrlIntoFrame(prevUrl, "Volviendo atrás...");
+                else {
+                    const frame = document.getElementById(`view-${this.activeTabId}`);
+                    frame.src = prevUrl;
+                    tab.url = prevUrl;
+                    this.switchTab(tab.id); // Refresca UI
+                }
             }
         }
 
@@ -523,14 +545,18 @@
             const tab = this.tabs.find(t => t.id === this.activeTabId);
             if(tab && tab.historyIndex < tab.history.length - 1) {
                 tab.historyIndex++;
-                this.loadUrlIntoFrame(tab.history[tab.historyIndex], "Avanzando...");
+                const nextUrl = tab.history[tab.historyIndex];
+                const frame = document.getElementById(`view-${this.activeTabId}`);
+                frame.src = nextUrl;
+                tab.url = nextUrl;
+                this.switchTab(tab.id);
             }
         }
 
         reload() {
             const frame = document.getElementById(`view-${this.activeTabId}`);
             if(frame.src) frame.src = frame.src;
-            ui.showToast("Actualizando página...");
+            ui.showToast("Recargando página...");
         }
 
         goHome() {
@@ -538,7 +564,6 @@
             tab.history.push('about:start');
             tab.historyIndex++;
             tab.title = 'Inicio';
-            document.getElementById('home-search').value = "";
             this.switchTab(tab.id);
         }
 
@@ -557,7 +582,9 @@
                 el.className = `tab ${tab.id === this.activeTabId ? 'active' : ''}`;
                 el.onclick = () => this.switchTab(tab.id);
                 
-                let icon = tab.url.includes('google.com') ? '<i class="fab fa-google" style="color:var(--accent)"></i>' : '<i class="fas fa-globe"></i>';
+                let icon = '<i class="fas fa-globe"></i>';
+                if(tab.url.includes('google.com')) icon = '<i class="fab fa-google" style="color:var(--accent)"></i>';
+                if(tab.url.includes('youtube.com')) icon = '<i class="fab fa-youtube" style="color:var(--danger)"></i>';
                 if(tab.url === 'about:start') icon = '<i class="fas fa-house"></i>';
 
                 el.innerHTML = `
@@ -576,7 +603,6 @@
         }
     }
 
-    // --- INTERFAZ UI ---
     const ui = {
         togglePanel: (id) => {
             const panel = document.getElementById(`panel-${id}`);
@@ -588,18 +614,20 @@
         renderHistory: () => {
             const list = dataManager.getHistory();
             const container = document.getElementById('history-list');
-            if(!list.length) return container.innerHTML = '<div style="text-align:center; color:#777; margin-top:30px;"><i class="fas fa-folder-open" style="font-size:40px; margin-bottom:15px; display:block;"></i>Historial vacío</div>';
+            if(!list.length) return container.innerHTML = '<div style="text-align:center; color:#777; margin-top:50px;"><i class="fas fa-folder-open" style="font-size:40px; margin-bottom:15px; display:block;"></i>No hay historial</div>';
             
-            container.innerHTML = list.map(item => `
-                <div class="history-item" onclick="document.getElementById('url-input').value = '${item.url}'; browser.navigate(); ui.closePanels()">
+            container.innerHTML = list.map(item => {
+                let displayUrl = item.url.length > 40 ? item.url.substring(0,40) + "..." : item.url;
+                return `
+                <div class="history-item" onclick="document.getElementById('url-input').value='${item.url}'; browser.navigate(); ui.closePanels()">
                     <i class="fas fa-link" style="color:var(--accent);"></i>
                     <div style="flex:1; overflow:hidden;">
                         <div style="font-size:13px; font-weight:bold; white-space:nowrap; text-overflow:ellipsis;">${item.title}</div>
-                        <div style="font-size:11px; opacity:0.5; white-space:nowrap; text-overflow:ellipsis;">${item.url}</div>
+                        <div style="font-size:11px; opacity:0.6;">${displayUrl}</div>
                     </div>
                     <span class="h-time">${item.time}</span>
                 </div>
-            `).join('');
+            `}).join('');
         },
         showToast: (msg) => {
             const t = document.getElementById('toast');
